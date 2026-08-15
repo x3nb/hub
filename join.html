@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Violet Web Café · Etherrealm</title>
+<meta name="description" content="A daily desktop for collecting thoughts and romantic poetry, kept by the chimera animals of a café in the etherrealm.">
+<meta name="theme-color" content="#3c0b5e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🕷️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Klee+One&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   The Violet Web Café — a desktop in the etherrealm
+   palette: deeppurple · hotpink-violet · inkblue (+ faded tones)
+   fonts:   UnifrakturMaguntia (titles) · Klee One (ui/body)
+            Homemade Apple (letters, notes, poetry)
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --deeppurple: #3c0b5e;
+  --deeppurple-2:#5b1a8a;
+  --hotpink:    #ff5fb2;
+  --violet:     #a678ff;
+  --violet-2:   #d985ff;
+  --inkblue:    #0e1230;
+  --inkblue-2:  #1b2354;
+  --faded-purple: #241042;
+  --faded-violet: #b9a2e6;
+  --light-violet: #d4c4f0;
+  --ink:         #c3c9dc;   /* soft light grey for reading text */
+  --cornflower:  #95b3ec;   /* cornflower blue for poems & accents */
+  --gold:        #ffd98a;
+  --glass: rgba(20, 12, 48, .62);
+  --glass-line: rgba(217, 133, 255, .35);
+  --cursive: 'Homemade Apple', cursive;
+  --ui: 'Klee One', 'Segoe UI', sans-serif;
+  --fraktur: 'UnifrakturMaguntia', serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+html { color-scheme: dark; }
+
+body {
+  font-family: var(--ui);
+  color: var(--light-violet);
+  overflow: hidden;
+  background: var(--inkblue);
+}
+
+.cursive { font-family: var(--cursive); }
+
+/* ══════════ LOADER ══════════ */
+#loader {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(120% 90% at 50% 10%, var(--deeppurple-2) 0%, var(--deeppurple) 40%, var(--inkblue-2) 78%, var(--inkblue) 100%);
+  opacity: 1;
+  pointer-events: all;
+}
+/* the website opens like the iris of a vintage camera eye — slow, smooth, seamless */
+#loader.iris { animation: irisOpen 1.7s cubic-bezier(.3,.7,.25,1) forwards; }
+@keyframes irisOpen {
+  0% { clip-path: polygon(54.00% 50.00%, 51.45% 50.39%, 53.46% 52.00%, 51.06% 51.06%, 52.00% 53.46%, 50.39% 51.45%, 50.00% 54.00%, 49.61% 51.45%, 48.00% 53.46%, 48.94% 51.06%, 46.54% 52.00%, 48.55% 50.39%, 46.00% 50.00%, 48.55% 49.61%, 46.54% 48.00%, 48.94% 48.94%, 48.00% 46.54%, 49.61% 48.55%, 50.00% 46.00%, 50.39% 48.55%, 52.00% 46.54%, 51.06% 48.94%, 53.46% 48.00%, 51.45% 49.61%); opacity: 1; }
+  14% { clip-path: polygon(62.80% 52.26%, 56.34% 52.96%, 59.96% 58.36%, 54.02% 55.73%, 54.45% 62.22%, 50.61% 56.97%, 47.74% 62.80%, 47.04% 56.34%, 41.64% 59.96%, 44.27% 54.02%, 37.78% 54.45%, 43.03% 50.61%, 37.20% 47.74%, 43.66% 47.04%, 40.04% 41.64%, 45.98% 44.27%, 45.55% 37.78%, 49.39% 43.03%, 52.26% 37.20%, 52.96% 43.66%, 58.36% 40.04%, 55.73% 45.98%, 62.22% 45.55%, 56.97% 49.39%); opacity: 1; }
+  28% { clip-path: polygon(73.18% 59.37%, 63.58% 60.23%, 65.39% 69.70%, 56.64% 65.65%, 53.48% 74.76%, 47.93% 66.87%, 40.63% 73.18%, 39.77% 63.58%, 30.30% 65.39%, 34.35% 56.64%, 25.24% 53.48%, 33.13% 47.93%, 26.82% 40.63%, 36.42% 39.77%, 34.61% 30.30%, 43.36% 34.35%, 46.52% 25.24%, 52.07% 33.13%, 59.37% 26.82%, 60.23% 36.42%, 69.70% 34.61%, 65.65% 43.36%, 74.76% 46.52%, 66.87% 52.07%); opacity: 1; }
+  42% { clip-path: polygon(82.36% 73.51%, 69.51% 74.09%, 66.27% 86.54%, 54.85% 80.62%, 45.82% 89.78%, 38.89% 78.94%, 26.49% 82.36%, 25.91% 69.51%, 13.46% 66.27%, 19.38% 54.85%, 10.22% 45.82%, 21.06% 38.89%, 17.64% 26.49%, 30.49% 25.91%, 33.73% 13.46%, 45.15% 19.38%, 54.18% 10.22%, 61.11% 21.06%, 73.51% 17.64%, 74.09% 30.49%, 86.54% 33.73%, 80.62% 45.15%, 89.78% 54.18%, 78.94% 61.11%); opacity: 1; }
+  56% { clip-path: polygon(85.09% 94.92%, 69.15% 95.10%, 57.93% 106.45%, 44.03% 98.63%, 28.65% 102.85%, 20.51% 89.13%, 5.08% 85.09%, 4.90% 69.15%, -6.45% 57.93%, 1.37% 44.03%, -2.85% 28.65%, 10.87% 20.51%, 14.91% 5.08%, 30.85% 4.90%, 42.07% -6.45%, 55.97% 1.37%, 71.35% -2.85%, 79.49% 10.87%, 94.92% 14.91%, 95.10% 30.85%, 106.45% 42.07%, 98.63% 55.97%, 102.85% 71.35%, 89.13% 79.49%); opacity: 1; }
+  70% { clip-path: polygon(75.99% 121.42%, 56.10% 119.73%, 36.80% 124.85%, 20.42% 113.44%, 1.15% 108.22%, -7.34% 90.15%, -21.42% 75.99%, -19.73% 56.10%, -24.85% 36.80%, -13.44% 20.42%, -8.22% 1.15%, 9.85% -7.34%, 24.01% -21.42%, 43.90% -19.73%, 63.20% -24.85%, 79.58% -13.44%, 98.85% -8.22%, 107.34% 9.85%, 121.42% 24.01%, 119.73% 43.90%, 124.85% 63.20%, 113.44% 79.58%, 108.22% 98.85%, 90.15% 107.34%); opacity: 1; }
+  86% { clip-path: polygon(45.74% 171.93%, 15.50% 162.84%, -14.65% 153.46%, -36.30% 130.48%, -57.72% 107.28%, -64.98% 76.54%, -71.93% 45.74%, -62.84% 15.50%, -53.46% -14.65%, -30.48% -36.30%, -7.28% -57.72%, 23.46% -64.98%, 54.26% -71.93%, 84.50% -62.84%, 114.65% -53.46%, 136.30% -30.48%, 157.72% -7.28%, 164.98% 23.46%, 171.93% 54.26%, 162.84% 84.50%, 153.46% 114.65%, 130.48% 136.30%, 107.28% 157.72%, 76.54% 164.98%); opacity: 1; }
+  96% { clip-path: polygon(-13.68% 207.62%, -50.50% 183.37%, -83.96% 154.66%, -103.72% 115.25%, -118.35% 73.66%, -115.76% 29.65%, -107.62% -13.68%, -83.37% -50.50%, -54.66% -83.96%, -15.25% -103.72%, 26.34% -118.35%, 70.35% -115.76%, 113.68% -107.62%, 150.50% -83.37%, 183.96% -54.66%, 203.72% -15.25%, 218.35% 26.34%, 215.76% 70.35%, 207.62% 113.68%, 183.37% 150.50%, 154.66% 183.96%, 115.25% 203.72%, 73.66% 218.35%, 29.65% 215.76%); opacity: 1; }
+  100% { clip-path: polygon(-13.68% 207.62%, -50.50% 183.37%, -83.96% 154.66%, -103.72% 115.25%, -118.35% 73.66%, -115.76% 29.65%, -107.62% -13.68%, -83.37% -50.50%, -54.66% -83.96%, -15.25% -103.72%, 26.34% -118.35%, 70.35% -115.76%, 113.68% -107.62%, 150.50% -83.37%, 183.96% -54.66%, 203.72% -15.25%, 218.35% 26.34%, 215.76% 70.35%, 207.62% 113.68%, 183.37% 150.50%, 154.66% 183.96%, 115.25% 203.72%, 73.66% 218.35%, 29.65% 215.76%); opacity: 0; }
+}
+
+#webCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ══════════ DESKTOP ══════════ */
+#desktop {
+  position: fixed; inset: 0;
+  display: none;
+  overflow-y: auto;
+  background:
+    radial-gradient(130% 100% at 50% 0%, var(--deeppurple-2) 0%, var(--deeppurple) 45%, var(--inkblue-2) 80%, var(--inkblue) 100%);
+}
+#desktop.on {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  gap: 1.1rem;
+  align-items: start;
+  padding: 0 3vw 5vh;
+}
+
+#motesCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* header */
+#header {
+  grid-column: 1 / -1;
+  position: relative; z-index: 5;
+  padding: 2.5vh 3vw 1vh; text-align: center;
+  pointer-events: none;
+}
+.site-title {
+  font-family: var(--fraktur); font-weight: normal;
+  font-size: clamp(2rem, 5.5vw, 3.8rem); line-height: 1.05;
+  background: linear-gradient(100deg, var(--cornflower) 0%, var(--violet-2) 38%, var(--hotpink) 70%, var(--cornflower) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 22px rgba(217,133,255,.45));
+}
+.site-subtitle {
+  max-width: 640px; margin: .5em auto 0;
+  font-size: .95rem; line-height: 1.55; color: var(--faded-violet);
+}
+.desk-buttons {
+  margin-top: .9em; display: flex; gap: .7em; justify-content: center; flex-wrap: wrap;
+  pointer-events: auto;
+}
+.desk-btn {
+  font-family: var(--ui); font-size: .95rem; color: var(--light-violet);
+  padding: .5em 1.1em; cursor: pointer;
+  border: 1px solid var(--glass-line); border-radius: 99px;
+  background: linear-gradient(135deg, rgba(92,26,138,.55), rgba(14,18,48,.55));
+  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.desk-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(217,133,255,.35); }
+.desk-btn.on {
+  background: linear-gradient(135deg, var(--violet), var(--hotpink));
+  color: #1a0430; border-color: var(--hotpink);
+}
+
+/* ══════════ MOVABLE LORE MENU ══════════ */
+#menu {
+  grid-column: 1 / -1;
+  position: relative; z-index: 40;
+  width: auto;
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: .3em .7em;
+  padding: .45em .9em;
+  border-radius: 99px;
+  border: 1px solid var(--glass-line);
+  background: rgba(20,12,48,.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 22px rgba(0,0,0,.4);
+}
+.menu-handle {
+  font-size: .78rem; letter-spacing: .14em; color: var(--violet-2);
+  padding: .2em .4em; cursor: default;
+  user-select: none;
+}
+.menu-handle .hint { opacity: .55; font-size: .68rem; }
+.menu-items { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: .2em; }
+.menu-item {
+  font-family: var(--ui); font-size: .98rem; text-align: center;
+  color: var(--light-violet); background: none; border: none;
+  padding: .32em .9em; cursor: pointer; border-radius: 99px;
+  transition: background .2s ease, color .2s ease;
+}
+.menu-item:hover {
+  color: var(--cornflower);
+  background: linear-gradient(90deg, rgba(166,120,255,.35), rgba(255,95,178,.18));
+}
+
+/* ══════════ WINDOWS ══════════ */
+.window {
+  position: relative; z-index: 10;
+  width: auto; min-width: 0;
+  border-radius: 16px;
+  border: 1px solid var(--glass-line);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 14px 44px rgba(0,0,0,.55);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  touch-action: none;
+}
+.window.dragging { box-shadow: 0 24px 70px rgba(0,0,0,.7); }
+.win-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .55em .9em;
+  cursor: default; user-select: none;
+  background: linear-gradient(90deg, rgba(217,133,255,.2), rgba(255,95,178,.12));
+  border-bottom: 1px solid var(--glass-line);
+}
+.win-title {
+  font-family: var(--fraktur); font-size: 1.15rem; color: var(--light-violet);
+  letter-spacing: .03em;
+}
+.minimize {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid var(--glass-line);
+  color: var(--light-violet); background: rgba(20,12,48,.5);
+  cursor: pointer; font-size: 1rem; line-height: 1;
+}
+.minimize:hover { background: var(--hotpink); color: #1a0430; }
+
+.win-body { padding: .9em 1.1em 1.1em; max-height: 48vh; overflow-y: auto; }
+.window.closed { display: none; }
+
+/* windows are laid out in the desktop grid */
+
+/* ══════════ NOTE / LETTER ══════════ */
+.letter-date { color: var(--violet-2); margin-bottom: .6em; font-size: 1rem; }
+.thought-input {
+  width: 100%; resize: vertical;
+  font-size: 1.05rem; line-height: 1.8; color: var(--ink);
+  background: rgba(247,240,255,.06);
+  border: 1px solid var(--glass-line); border-radius: 10px;
+  padding: .7em .9em; outline: none;
+}
+.thought-input::placeholder { color: rgba(217,178,255,.5); }
+.thought-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.18); }
+
+#saveThoughtBtn, #newPoemBtn, #keepPoemBtn {
+  font-family: var(--ui); margin-top: .8em;
+  font-size: .9rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .5em 1em;
+  background: linear-gradient(135deg, var(--violet-2), var(--hotpink));
+  box-shadow: 0 4px 14px rgba(217,133,255,.35);
+  transition: transform .2s ease;
+}
+#saveThoughtBtn:hover, #newPoemBtn:hover, #keepPoemBtn:hover { transform: translateY(-2px); }
+.save-msg { margin-top: .6em; color: var(--gold); font-size: .95rem; }
+
+.collected-label {
+  margin: 1.2em 0 .4em; font-size: 1rem; color: var(--violet-2);
+}
+#collectedList { list-style: none; }
+#collectedList li {
+  font-size: .92rem; line-height: 1.6; color: var(--ink);
+  padding: .45em .6em; margin-bottom: .45em;
+  background: rgba(20,12,48,.4);
+  border-left: 2px solid var(--hotpink);
+  border-radius: 0 8px 8px 0;
+  display: flex; justify-content: space-between; gap: .6em; align-items: flex-start;
+}
+#collectedList li .del { cursor: pointer; color: var(--violet-2); font-size: .8rem; }
+#collectedList li .del:hover { color: var(--hotpink); }
+
+/* ══════════ POETRY ══════════ */
+.poem-text { font-family: var(--ui); font-size: 1.08rem; line-height: 1.9; color: var(--cornflower); min-height: 5em; }
+.poem-author {
+  margin-top: .8em; text-align: right;
+  font-size: .82rem; letter-spacing: .14em; color: var(--violet-2);
+  text-transform: uppercase;
+}
+.poem-actions { display: flex; gap: .7em; flex-wrap: wrap; }
+.poem-actions button { margin-top: .9em; }
+#keepPoemBtn { background: linear-gradient(135deg, var(--hotpink), var(--violet-2)); }
+#keepPoemBtn.kept { background: linear-gradient(135deg, var(--gold), var(--hotpink)); }
+
+/* ══════════ THE INTRO CARD · how shall the web call you? ══════════ */
+#introCard {
+  position: relative; z-index: 5;
+  width: min(440px, 90vw);
+  padding: 2.2em 2em 1.8em;
+  border-radius: 22px;
+  border: 1px solid var(--glass-line);
+  background: rgba(20, 12, 48, .78);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 22px 70px rgba(0,0,0,.6), 0 0 60px rgba(166,120,255,.18);
+  text-align: center;
+  opacity: 0; transform: scale(.94) translateY(12px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+#introCard.show { opacity: 1; transform: none; }
+#introCard.bye { opacity: 0; transform: scale(.96); transition: opacity .35s ease, transform .35s ease; }
+.intro-title {
+  font-family: var(--fraktur); font-weight: normal;
+  font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.1;
+  color: var(--violet-2);
+  filter: drop-shadow(0 0 18px rgba(217,133,255,.45));
+}
+.intro-sub { margin-top: .6em; font-size: .95rem; line-height: 1.6; color: var(--faded-violet); }
+.intro-label { margin-top: 1.4em; font-size: .86rem; letter-spacing: .05em; color: var(--violet-2); }
+.intro-input {
+  display: block; width: 100%; margin-top: .8em;
+  font-size: 1.05rem; text-align: center; color: var(--ink);
+  background: rgba(247,240,255,.07);
+  border: 1px solid var(--glass-line); border-radius: 12px;
+  padding: .7em .9em; outline: none;
+  font-family: var(--cursive);
+}
+.intro-input::placeholder { color: rgba(217,178,255,.5); }
+.intro-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.2); }
+.intro-join {
+  margin-top: 1em; width: 100%;
+  font-family: var(--ui); font-size: 1rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .7em 1.4em;
+  background: linear-gradient(135deg, var(--violet-2), var(--hotpink));
+  box-shadow: 0 6px 22px rgba(217,133,255,.4);
+  transition: transform .2s ease;
+}
+.intro-join:hover { transform: translateY(-2px); }
+.intro-back-name { font-family: var(--cursive); font-size: 1.3rem; color: var(--cornflower); }
+.intro-hint { margin-top: 1.1em; font-size: .76rem; line-height: 1.6; color: var(--faded-violet); }
+.intro-links { margin-top: 1.2em; display: flex; justify-content: center; gap: .8em; align-items: center; flex-wrap: wrap; }
+.intro-link {
+  font-family: var(--ui); font-size: .84rem; color: var(--cornflower); cursor: pointer;
+  background: none; border: none; border-bottom: 1px dotted var(--glass-line);
+  padding: .2em .1em;
+}
+.intro-link:hover { color: var(--violet-2); }
+.intro-dot { color: var(--faded-violet); opacity: .7; }
+
+/* ══════════ NOTIFY TEACUP ══════════ */
+.notify-btn {
+  position: absolute; right: .6em; top: 50%; transform: translateY(-50%);
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--glass-line);
+  background: rgba(20,12,48,.6);
+  color: var(--violet-2); cursor: pointer; font-size: 1.05rem; line-height: 1;
+}
+.notify-btn:hover { background: rgba(60,20,100,.6); color: var(--cornflower); }
+.notify-btn.glow { animation: notifyPulse 2.2s ease-in-out infinite; }
+@keyframes notifyPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(217,133,255,.3); }
+  50% { box-shadow: 0 0 20px 5px rgba(217,133,255,.8); }
+}
+.notify-count {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 17px; height: 17px; padding: 0 3px; border-radius: 99px;
+  background: var(--hotpink); color: #1a0430;
+  font-size: .68rem; font-weight: 700; line-height: 17px; text-align: center;
+}
+
+/* ══════════ GUILD HALL CHAT ══════════ */
+.guild-status { font-size: .78rem; color: var(--faded-violet); line-height: 1.5; }
+.guild-status.live { color: var(--cornflower); }
+.guild-status-row { display: flex; align-items: center; justify-content: space-between; gap: .6em; }
+.ping-btn {
+  flex: 0 0 auto; cursor: pointer; border: 1px solid var(--glass-line);
+  background: rgba(247,240,255,.06); border-radius: 99px; padding: .1em .5em;
+  font-size: .85rem; line-height: 1.5; transition: transform .2s ease;
+}
+.ping-btn:hover { transform: scale(1.08); }
+.ping-btn.muted { opacity: .5; filter: grayscale(1); }
+.guild-msgs {
+  height: 220px; overflow-y: auto;
+  margin: .6em 0 .8em;
+  display: flex; flex-direction: column; gap: .4em;
+  padding-right: 2px;
+}
+.guild-msg {
+  font-size: .9rem; line-height: 1.5;
+  background: rgba(20,12,48,.42);
+  border-left: 2px solid var(--violet-2);
+  border-radius: 0 8px 8px 0;
+  padding: .4em .6em;
+  animation: msgIn .3s ease;
+}
+@keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.guild-msg .who { color: var(--cornflower); font-weight: 700; }
+.guild-msg .txt { color: var(--ink); white-space: pre-wrap; word-break: break-word; }
+.guild-msg.mine { border-left-color: var(--hotpink); }
+.guild-msg.chimera { border-left-color: var(--gold); font-size: .95rem; }
+.guild-msg.chimera .who { color: var(--gold); }
+.guild-compose { display: flex; gap: .4em; }
+.guild-name, .guild-input {
+  background: rgba(247,240,255,.06);
+  border: 1px solid var(--glass-line); border-radius: 8px;
+  color: var(--ink); padding: .45em .6em;
+  font-family: var(--ui); font-size: .88rem; outline: none;
+  min-width: 0;
+}
+.guild-name { flex: 0 0 96px; }
+.guild-input { flex: 1 1 auto; }
+.guild-name:focus, .guild-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.18); }
+#guildSend {
+  font-family: var(--ui); font-size: .88rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .45em .9em; white-space: nowrap;
+  background: linear-gradient(135deg, var(--violet-2), var(--hotpink));
+  box-shadow: 0 4px 14px rgba(217,133,255,.35);
+  transition: transform .2s ease;
+}
+#guildSend:hover { transform: translateY(-2px); }
+#guildSend:disabled { opacity: .5; cursor: default; transform: none; }
+
+/* ══════════ MESSAGE WALL ══════════ */
+.wall-status { font-size: .78rem; color: var(--faded-violet); line-height: 1.5; }
+.wall-inbox { margin: .5em 0; display: flex; flex-direction: column; gap: .4em; }
+.wall-note {
+  font-size: .85rem; line-height: 1.5;
+  background: rgba(20,12,48,.42);
+  border-left: 2px solid var(--violet-2);
+  border-radius: 0 8px 8px 0;
+  padding: .4em .6em;
+  animation: msgIn .3s ease;
+}
+.wall-note .who { color: var(--cornflower); font-weight: 700; }
+.wall-note .txt { color: var(--ink); word-break: break-word; }
+.wall-note .to { font-size: .72em; color: var(--violet-2); }
+.wall-note.mine-inbox { border-left-color: var(--gold); }
+.wall-note.mine-inbox .who { color: var(--gold); }
+.wall-compose { display: flex; gap: .4em; margin: .6em 0; }
+.wall-to, .wall-input, .qa-input {
+  background: rgba(247,240,255,.06);
+  border: 1px solid var(--glass-line); border-radius: 8px;
+  color: var(--ink); padding: .45em .6em;
+  font-family: var(--ui); font-size: .88rem; outline: none; min-width: 0;
+}
+.wall-to:focus, .wall-input:focus, .qa-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.18); }
+.wall-to { flex: 0 0 96px; }
+.wall-input { flex: 1 1 auto; }
+#wallSend { font-family: var(--ui); font-size: .88rem; color: #1a0430; cursor: pointer; border: none; border-radius: 99px; padding: .45em .9em; white-space: nowrap; background: linear-gradient(135deg, var(--violet-2), var(--hotpink)); box-shadow: 0 4px 14px rgba(217,133,255,.35); transition: transform .2s ease; }
+#wallSend:hover { transform: translateY(-2px); }
+.wall-list { display: flex; flex-direction: column; gap: .4em; margin-top: .2em; }
+.wall-list .wall-note { border-left-color: var(--violet-2); }
+
+/* ══════════ WELCOME DESK ══════════ */
+.welcome-greeting { font-size: 1.05rem; line-height: 1.6; color: var(--cornflower); margin-bottom: .6em; }
+.checkin-box { display: flex; align-items: center; gap: .6em; flex-wrap: wrap; margin-bottom: .3em; }
+#checkinBtn, #remindBtn, #qaAsk {
+  font-family: var(--ui); font-size: .86rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .5em 1em;
+  background: linear-gradient(135deg, var(--violet-2), var(--hotpink));
+  box-shadow: 0 4px 14px rgba(217,133,255,.35);
+  transition: transform .2s ease;
+}
+#checkinBtn:hover, #remindBtn:hover, #qaAsk:hover { transform: translateY(-2px); }
+#checkinBtn.checked { background: linear-gradient(135deg, var(--gold), var(--hotpink)); }
+.checkin-info { font-size: .82rem; color: var(--faded-violet); }
+.streak { font-size: .82rem; color: var(--gold); margin-bottom: .5em; }
+.guide { margin: .4em 0 .8em; font-size: .86rem; }
+.guide summary { cursor: pointer; color: var(--light-violet); font-weight: 700; }
+.guide-list { margin: .5em 0 0 1.1em; display: flex; flex-direction: column; gap: .4em; color: var(--ink); }
+.reminder-box { display: flex; align-items: center; gap: .5em; flex-wrap: wrap; margin-bottom: .8em; }
+.reminder-label, .qa-label { font-size: .82rem; color: var(--violet-2); letter-spacing: .06em; margin: .5em 0 .3em; flex-basis: 100%; }
+#remindTime { background: rgba(247,240,255,.06); border: 1px solid var(--glass-line); border-radius: 8px; color: var(--ink); padding: .4em .5em; font-family: var(--ui); font-size: .88rem; outline: none; }
+#remindBtn.on { background: linear-gradient(135deg, var(--hotpink), var(--violet-2)); }
+.remind-info { font-size: .8rem; color: var(--faded-violet); }
+.qa-compose { display: flex; gap: .4em; }
+.qa-input { flex: 1 1 auto; }
+.qa-list { display: flex; flex-direction: column; gap: .5em; margin-top: .5em; }
+.qa-item {
+  background: rgba(20,12,48,.42);
+  border-left: 2px solid var(--hotpink);
+  border-radius: 0 8px 8px 0;
+  padding: .45em .6em;
+}
+.qa-item .q { color: var(--ink); font-size: .88rem; line-height: 1.5; }
+.qa-item .q .who { color: var(--cornflower); font-weight: 700; }
+.qa-item .a { color: var(--gold); font-family: var(--ui); font-size: .92rem; line-height: 1.6; margin-top: .25em; }
+.qa-item .a-who { color: var(--faded-violet); font-size: .72em; }
+.qa-answer { margin-top: .4em; display: flex; gap: .4em; }
+.qa-answer input {
+  flex: 1 1 auto; background: rgba(247,240,255,.06);
+  border: 1px solid var(--glass-line); border-radius: 8px;
+  color: var(--ink); padding: .35em .55em; font-family: var(--ui); font-size: .82rem; outline: none;
+}
+.qa-answer button { font-family: var(--ui); font-size: .78rem; color: #1a0430; cursor: pointer; border: none; border-radius: 99px; padding: .35em .8em; background: linear-gradient(135deg, var(--violet-2), var(--hotpink)); }
+
+/* ══════════ GALLERY + COLOR REVEAL ══════════ */
+.gallery {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1em;
+}
+.photo-frame {
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--glass-line);
+  background: var(--faded-purple);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.photo-frame:hover { transform: translateY(-4px); box-shadow: 0 12px 34px rgba(217,133,255,.3); }
+
+/* the reveal: the image sleeps in monochrome, hover wakes its true colors */
+.photo-frame .img-wrap { position: relative; overflow: hidden; }
+.photo-frame img {
+  display: block; width: 100%; aspect-ratio: 1/1; object-fit: cover;
+  filter: grayscale(1) contrast(1.05) brightness(.97) sepia(.15);
+  transition: filter 1s ease, transform 1.4s ease;
+}
+.photo-frame:hover img {
+  filter: grayscale(0) contrast(1) brightness(1) sepia(0);
+  transform: scale(1.06);
+}
+/* a violet sheen that sweeps across while the color comes back */
+.photo-frame .img-wrap::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(217,133,255,.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform .9s ease;
+  mix-blend-mode: screen;
+}
+.photo-frame:hover .img-wrap::after { transform: translateX(120%); }
+
+.photo-frame figcaption {
+  padding: .7em .8em .8em;
+  display: flex; flex-direction: column; gap: .2em;
+}
+.cap-title {
+  font-size: .95rem; font-weight: 700; color: var(--light-violet);
+  letter-spacing: .02em;
+}
+.cap-sub { font-size: .82rem; line-height: 1.5; color: var(--faded-violet); }
+.links { margin-top: .5em; display: flex; gap: .5em; flex-wrap: wrap; }
+.links a {
+  font-size: .78rem; color: var(--hotpink); text-decoration: none;
+  border: 1px solid rgba(255,95,178,.45);
+  border-radius: 99px; padding: .28em .7em;
+  transition: background .2s ease, color .2s ease;
+}
+.links a:hover { background: var(--hotpink); color: #1a0430; }
+
+/* ══════════ FOOTER ══════════ */
+footer {
+  position: absolute; bottom: 12px; width: 100%; text-align: center; z-index: 5;
+  font-size: .85rem; color: var(--faded-violet); opacity: .8;
+  pointer-events: none;
+}
+
+/* ══════════ LORE MODAL ══════════ */
+#loreModal {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(8,6,24,.66);
+  backdrop-filter: blur(4px);
+}
+#loreModal[hidden] { display: none; }
+.lore-card {
+  position: relative;
+  width: min(560px, 90vw); max-height: 78vh; overflow-y: auto;
+  padding: 2em 2.2em 2.4em;
+  border-radius: 18px;
+  border: 1px solid var(--glass-line);
+  background:
+    linear-gradient(165deg, rgba(92,26,138,.88), rgba(14,18,48,.92));
+  box-shadow: 0 22px 70px rgba(0,0,0,.6), 0 0 60px rgba(166,120,255,.18);
+  animation: pop .45s ease;
+}
+@keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+.lore-close {
+  position: absolute; top: 12px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--glass-line); cursor: pointer;
+  color: var(--light-violet); background: rgba(20,12,48,.6);
+}
+.lore-close:hover { background: var(--hotpink); color: #1a0430; }
+.lore-title {
+  font-family: var(--fraktur); font-weight: normal;
+  font-size: 2rem; margin-bottom: .6em;
+  background: linear-gradient(90deg, var(--light-violet), var(--hotpink));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.lore-text { font-family: var(--ui); font-size: 1.06rem; line-height: 2.05; color: var(--ink); }
+.lore-sign { margin-top: 1.2em; text-align: right; font-size: .95rem; color: var(--violet-2); }
+
+/* ══════════ RESPONSIVE ══════════ */
+/* narrow desktop panes: keep draggable, but don't let windows fall off screen */
+@media (max-width: 1080px) and (min-width: 641px) {
+  #desktop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* true small screens: one column, everything stacks */
+@media (max-width: 640px) {
+  #desktop { grid-template-columns: 1fr; padding: 0 4vw 4vh; }
+  #menu { grid-column: 1 / -1; }
+  .win-body { max-height: none; }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- ══════════ LOADING SCREEN · the spider spins the violet web ══════════ -->
+  <div id="loader">
+    <canvas id="webCanvas"></canvas>
+
+    <!-- the front door: how shall the web call you? -->
+    <div id="introCard" class="intro-card">
+      <h2 class="intro-title">The Violet Web Café</h2>
+      <p class="intro-sub cursive">a crooked little house at the seam of inkblue &amp; deeppurple, where chimeras pour the night</p>
+      <div id="introJoin">
+        <label class="intro-label" for="introName">how would you like the web to call you?</label>
+        <input id="introName" class="intro-input" placeholder="your name" maxlength="20" autocomplete="off">
+        <button id="introJoinBtn" class="intro-join">join the community ⟡</button>
+        <p class="intro-hint">the web remembers your name on this device — type it again on a new one to come back as yourself.</p>
+      </div>
+      <div id="introBack" hidden>
+        <p class="intro-label">welcome back,</p>
+        <p class="intro-back-name" id="introBackName"></p>
+        <button id="introEnterBtn" class="intro-join">enter the café ⟡</button>
+        <p class="intro-hint">your messages are waiting for you by the fire.</p>
+      </div>
+      <div class="intro-links">
+        <button id="introGuestBtn" class="intro-link">just browsing</button>
+        <span class="intro-dot">·</span>
+        <button id="introSwitchBtn" class="intro-link" hidden>not you? switch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ THE DESKTOP ══════════ -->
+  <div id="desktop">
+
+    <canvas id="motesCanvas" aria-hidden="true"></canvas>
+
+    <header id="header">
+      <h1 class="site-title">The Violet Web Café</h1>
+      <p class="site-subtitle cursive">a little crooked house at the seam of inkblue &amp; deeppurple, where chimeras pour the night and keep the thoughts of dreamers</p>
+      <div class="desk-buttons">
+        <button class="desk-btn" data-win="noteWin">✎ Notes</button>
+        <button class="desk-btn" data-win="poemWin">❦ Poetry</button>
+        <button class="desk-btn" data-win="galleryWin">◈ Gallery</button>
+        <button class="desk-btn" data-win="guildWin">⚔ Guild</button>
+        <button class="desk-btn" data-win="wallWin">✉ Wall</button>
+        <button class="desk-btn" data-win="welcomeWin">☙ Welcome</button>
+      </div>
+    </header>
+
+    <!-- movable lore menu -->
+    <nav id="menu" aria-label="Lore menu">
+      <div class="menu-handle">☽ the archive</div>
+      <div class="menu-items">
+        <button class="menu-item" data-q="who">Who</button>
+        <button class="menu-item" data-q="what">What</button>
+        <button class="menu-item" data-q="when">When</button>
+        <button class="menu-item" data-q="why">Why</button>
+        <button class="menu-item" data-q="where">Where</button>
+      </div>
+      <button id="notifyBtn" class="notify-btn" title="no new messages">☕<span id="notifyCount" class="notify-count" hidden></span></button>
+    </nav>
+
+    <!-- daily note / letter -->
+    <section class="window" id="noteWin" data-title="The Letter Home">
+      <div class="win-head">
+        <span class="win-title">The Letter Home</span>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body letter">
+        <p class="letter-date cursive" id="todayEl"></p>
+        <textarea id="thoughtInput" class="thought-input cursive" rows="5" placeholder="Dear café, today I thought…"></textarea>
+        <button id="saveThoughtBtn">✎ pin this thought</button>
+        <p id="saveMsg" class="save-msg cursive" hidden>pinned to the web ✦</p>
+        <div id="collectedCtn">
+          <p class="collected-label cursive">thoughts &amp; poems kept here</p>
+          <ul id="collectedList"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- poetry of the night -->
+    <section class="window" id="poemWin" data-title="Poetry of the Night">
+      <div class="win-head">
+        <span class="win-title">Poetry of the Night</span>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body poem">
+        <p class="poem-text" id="poemText"></p>
+        <p class="poem-author" id="poemAuthor"></p>
+        <div class="poem-actions">
+          <button id="newPoemBtn">❦ another</button>
+          <button id="keepPoemBtn">♥ keep this one</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- gallery -->
+    <section class="window" id="galleryWin" data-title="Sights of the Etherrealm">
+      <div class="win-head">
+        <span class="win-title">Sights of the Etherrealm</span>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body">
+        <div class="gallery">
+          <figure class="photo-frame" data-index="0">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-exterior/640/480" alt="The café floating in the violet etherrealm">
+            </div>
+            <figcaption>
+              <span class="cap-title">The Café, from the Far Side of the Web</span>
+              <span class="cap-sub cursive">where the moths steer by your heartbeat</span>
+              <span class="links">
+                <a href="https://www.poetryfoundation.org" target="_blank" rel="noopener">Poetry Foundation ↗</a>
+                <a href="https://en.wikipedia.org/wiki/Chimera_(mythology)" target="_blank" rel="noopener">the chimera ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="1">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-barista/640/480" alt="A chimera barista pouring tea">
+            </div>
+            <figcaption>
+              <span class="cap-title">Auren Pours the Night</span>
+              <span class="cap-sub cursive">lion, eagle, serpent — and one very steady paw</span>
+              <span class="links">
+                <a href="https://en.wikipedia.org/wiki/Romantic_poetry" target="_blank" rel="noopener">the romantics ↗</a>
+                <a href="https://www.britannica.com/art/English-literature/The-Romantic-period" target="_blank" rel="noopener">the romantic period ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="2">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-interior/640/480" alt="The café interior with floating teacups">
+            </div>
+            <figcaption>
+              <span class="cap-title">The Reading Room</span>
+              <span class="cap-sub cursive">teacups drift; nobody rushes; the harp plays itself</span>
+              <span class="links">
+                <a href="https://www.gutenberg.org/" target="_blank" rel="noopener">gutenberg ↗</a>
+                <a href="https://poets.org/" target="_blank" rel="noopener">poets.org ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="3">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-wingedfox/640/480" alt="A winged fox writing a letter">
+            </div>
+            <figcaption>
+              <span class="cap-title">Veyla Keeps a Letter</span>
+              <span class="cap-sub cursive">silver-winged fox, chronicler of leftover thoughts</span>
+              <span class="links">
+                <a href="https://www.poetryfoundation.org/poems/browse" target="_blank" rel="noopener">poems to read ↗</a>
+                <a href="https://archive.org/" target="_blank" rel="noopener">archive ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="4">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-mooncake/640/480" alt="Mooncake and violet tea on a floating table">
+            </div>
+            <figcaption>
+              <span class="cap-title">Tea &amp; Mooncake, Unclaimed</span>
+              <span class="cap-sub cursive">a setting left for someone who has not arrived yet</span>
+              <span class="links">
+                <a href="https://en.wikipedia.org/wiki/Romanticism" target="_blank" rel="noopener">romanticism ↗</a>
+                <a href="https://www.poetryfoundation.org/poets" target="_blank" rel="noopener">the poets ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- guild hall chat -->
+    <section class="window" id="guildWin" data-title="The Guild Hall">
+      <div class="win-head">
+        <span class="win-title">The Guild Hall</span>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body guild">
+        <div class="guild-status-row">
+          <p class="guild-status" id="guildStatus">reaching for the etherwire…</p>
+          <button id="pingBtn" class="ping-btn" title="pings on">🔔</button>
+        </div>
+        <div id="guildMsgs" class="guild-msgs"></div>
+        <div class="guild-compose">
+          <input id="guildName" class="guild-name" placeholder="your name" maxlength="20">
+          <input id="guildInput" class="guild-input" placeholder="speak into the web…" maxlength="300">
+          <button id="guildSend">❦ send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- the message wall -->
+    <section class="window" id="wallWin" data-title="The Message Wall">
+      <div class="win-head">
+        <span class="win-title">The Message Wall</span>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body wall">
+        <p class="wall-status" id="wallStatus"></p>
+        <div id="wallInbox" class="wall-inbox"></div>
+        <div class="wall-compose">
+          <input id="wallTo" class="wall-to" placeholder="for: anyone" maxlength="20">
+          <input id="wallInput" class="wall-input" placeholder="pin a note for a member by name…" maxlength="300">
+          <button id="wallSend">✉ pin</button>
+        </div>
+        <div id="wallList" class="wall-list"></div>
+      </div>
+    </section>
+
+    <!-- the welcome desk -->
+    <section class="window" id="welcomeWin" data-title="The Welcome Desk">
+      <div class="win-head">
+        <span class="win-title">The Welcome Desk</span>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body welcome">
+        <p id="welcomeGreeting" class="welcome-greeting cursive"></p>
+        <div class="checkin-box">
+          <button id="checkinBtn">🕸 I'm here today</button>
+          <span id="checkinInfo" class="checkin-info"></span>
+        </div>
+        <p id="streakEl" class="streak"></p>
+        <details class="guide">
+          <summary>How this café works</summary>
+          <ul class="guide-list">
+            <li><b>⚔ The Guild Hall</b> — chat with anyone who is online right now.</li>
+            <li><b>✉ The Message Wall</b> — pin a note for a member by name, or for anyone. It waits in their inbox until they return.</li>
+            <li><b>❦ Poetry of the Night</b> — a fresh poem from the Romantics; keep the ones you love.</li>
+            <li><b>✎ The Letter Home</b> — your private daily journal. Only you can read it.</li>
+            <li><b>◈ Gallery</b> — five paintings; hover to wake their true colors.</li>
+            <li><b>🕸 The Daily Web</b> — check in below so the guild knows you were here today.</li>
+            <li><b>🔔 The Bell</b> — set a time and the café will ring you back each day.</li>
+          </ul>
+        </details>
+        <div class="reminder-box">
+          <p class="reminder-label">🔔 the daily bell</p>
+          <input type="time" id="remindTime" value="20:00">
+          <button id="remindBtn">ring the bell</button>
+          <span id="remindInfo" class="remind-info"></span>
+        </div>
+        <div class="qa-box">
+          <p class="qa-label">ask the café</p>
+          <div class="qa-compose">
+            <input id="qaInput" class="qa-input" placeholder="how do I leave a note for a friend?…" maxlength="300">
+            <button id="qaAsk">ask</button>
+          </div>
+          <div id="qaList" class="qa-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="cursive">the web remembers everything you forget to keep · ✦</footer>
+  </div>
+
+  <!-- lore modal -->
+  <div id="loreModal" hidden>
+    <div class="lore-card">
+      <button id="loreClose" class="lore-close">✕</button>
+      <h2 id="loreTitle" class="lore-title"></h2>
+      <p id="loreText" class="lore-text"></p>
+      <p class="lore-sign cursive">— with love, the chimeras</p>
+    </div>
+  </div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   The Violet Web Café — script.js
+   • loading screen: a spider spins a violet web (≥ 5s)
+   • a daily desktop: letters, poetry of the night, gallery
+   • movable lore menu (Who / What / When / Why / Where)
+   • localStorage keeps your thoughts, saved poems, and layout
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+
+  /* ───────────────────────── 1 · LORE ───────────────────────── */
+  const LORE = {
+    who: {
+      title: "Who",
+      text: "We are the chimeras of the violet web — three hearts, six wings, and one very long tail, all tucked behind a single apron. There is Auren, who pours the night: a lion who dreamed himself half eagle and half serpent. There is Veyla, the silver-winged fox, who keeps the letters no one ever finishes reading. There is Ost, moth-eyed and quiet, who minds the door. And Nyxiel, the spider-waif, who mends whatever we tear when we argue about the poetry. We are never one thing. That is the whole trick of it."
+    },
+    what: {
+      title: "What",
+      text: "A small crooked café nailed loosely to the under-edge of the etherrealm. We serve tea brewed from dissolved night, mooncake baked out of remembered weather, and a quiet corner to leave a thought you no longer need. On slow evenings the harp plays itself and the teacups drift between the tables so that nobody has to ask. Everything is paid for in confessions and stray lines of poetry, though no one here is very strict about the price."
+    },
+    when: {
+      title: "When",
+      text: "Always and never at the same time. The café opens at the hour between your last thought and your first one, and closes when the web catches a falling star. The easiest way to find the right moment is to follow a line of poetry that keeps repeating itself until you give in — that is the door. Wednesdays are especially good for arriving."
+    },
+    why: {
+      title: "Why",
+      text: "Because some thoughts are too heavy to carry alone, and some are far too lovely to keep. The chimeras collect them, sew them into the web, and read them back to you on nights when you have forgotten your own name. To leave a thought here is not to lose it. It is to trust the web with it. That is what the web is for."
+    },
+    where: {
+      title: "Where",
+      text: "At the seam where inkblue meets deeppurple, just past the violet hour. Look for the glow between two heartbeats. If you smell violets, and hear a harp and a kettle sighing, you are almost there — stand very still, and the web will carry you the rest of the way."
+    }
+  };
+
+  /* ─────────────── 2 · POETRY OF THE ROMANTICS ─────────────── */
+  const POEMS = [
+    { text: "A thing of beauty is a joy for ever:\nIts loveliness increases; it will never\nPass into nothingness.", author: "John Keats", source: "Endymion, 1818" },
+    { text: "She walks in beauty, like the night\nOf cloudless climes and starry skies;\nAnd all that's best of dark and bright\nMeet in her aspect and her eyes.", author: "Lord Byron", source: "She Walks in Beauty, 1814" },
+    { text: "Music, when soft voices die,\nVibrates in the memory;\nOdours, when sweet violets sicken,\nLive within the sense they quicken.", author: "Percy Bysshe Shelley", source: "Music, When Soft Voices Die, 1824" },
+    { text: "Love seeketh not itself to please,\nNor for itself hath any care,\nBut for another gives its ease,\nAnd builds a Heaven in Hell's despair.", author: "William Blake", source: "The Clod and the Pebble, 1794" },
+    { text: "O my Luve's like a red, red rose,\nThat's newly sprung in June:\nO my Luve's like the melodie\nThat's sweetly play'd in tune.", author: "Robert Burns", source: "A Red, Red Rose, 1794" },
+    { text: "She dwelt among the untrodden ways\nBeside the springs of Dove,\nA maid whom there were none to praise\nAnd very few to love.", author: "William Wordsworth", source: "She Dwelt Among the Untrodden Ways, 1798" },
+    { text: "He prayeth well, who loveth well\nBoth man and bird and beast.", author: "Samuel Taylor Coleridge", source: "The Rime of the Ancient Mariner, 1798" },
+    { text: "How do I love thee? Let me count the ways.\nI love thee to the depth and breadth and height\nMy soul can reach.", author: "Elizabeth Barrett Browning", source: "Sonnets from the Portuguese XLIII, 1850" },
+    { text: "So, we'll go no more a roving\nSo late into the night,\nThough the heart be still as loving,\nAnd the moon be still as bright.", author: "Lord Byron", source: "So We'll Go No More a Roving, 1817" },
+    { text: "That Love is all there is,\nIs all we know of Love;\nIt is enough, the freight should be\nProportioned to the groove.", author: "Emily Dickinson", source: "c. 1863" },
+    { text: "Believe me, if all those endearing young charms,\nWhich I gaze on so fondly to-day,\nWere to change by to-morrow, and fleet in my arms,\nLike fairy-gifts fading away,\nThou wouldst still be adored.", author: "Thomas Moore", source: "Believe Me, If All Those Endearing Young Charms, 1808" },
+    { text: "I am! yet what I am, who cares, or knows?\nMy friends forsake me like a memory lost.", author: "John Clare", source: "I Am, 1848" },
+    { text: "The garlands fade that Spring so lately wove,\nEach simple flower, which she had nursed in dew,\nAnemonies, that spangled every grove.", author: "Charlotte Smith", source: "Written at the Close of Spring, 1784" },
+    { text: "I love not Man the less, but Nature more.", author: "Lord Byron", source: "Childe Harold's Pilgrimage, 1818" }
+  ];
+
+  /* ─────────────────── 3 · storage helpers ─────────────────── */
+  const store = {
+    get(key, fallback) {
+      try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+      catch (e) { return fallback; }
+    },
+    set(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* full */ }
+    }
+  };
+
+  /* ─────────── 4 · the loading web & the spider ─────────── */
+  const loader = document.getElementById("loader");
+  const webCanvas = document.getElementById("webCanvas");
+  const wctx = webCanvas.getContext("2d");
+
+  const MIN_LOAD_MS = 6500;
+  let loadT0 = 0;
+  let loadDone = false;
+
+  function sizeCanvas(canvas) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return ctx;
+  }
+
+  function drawWeb(ctx, t, w, h, phase) {
+    const cx = w / 2, cy = h * 0.40;
+    const maxR = Math.min(w, h) * 0.42;
+    const SPOKES = 18;
+    const TURNS = 3.4;
+    const N = Math.round(SPOKES * TURNS);
+    const dA = (Math.PI * 2) / SPOKES;
+
+    /* fixed organic jitter per spoke (deterministic, so the web never shivers) */
+    const JIT = Array.from({ length: SPOKES }, (_, i) =>
+      (0.5 * Math.sin(i * 2.7) + 0.5 * Math.sin(i * 1.31 + 1)) * 0.035);
+    const JIT2 = Array.from({ length: SPOKES }, (_, i) =>
+      (Math.sin(i * 3.9) * 0.5 + Math.sin(i * 5.7 + 0.4) * 0.5) * 0.02);
+    const wob = (u) => 0.06 * Math.sin(u * 31) + 0.04 * Math.sin(u * 73 + 1.3);
+
+    const vert = (j) => {
+      const u = j / N;
+      const ang = j * dA + JIT2[j % SPOKES] * (1.15 - u);
+      const r = maxR * Math.pow(u, 0.5) * (1 + wob(u) + JIT[j % SPOKES]);
+      return { x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r };
+    };
+
+    ctx.clearRect(0, 0, w, h);
+
+    /* soft breath of light behind the web */
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 1.6);
+    glow.addColorStop(0, "rgba(166,120,255,0.20)");
+    glow.addColorStop(1, "rgba(14,18,48,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
+
+    /* irregular outer frame — one polygon joining the spoke tips */
+    ctx.strokeStyle = "rgba(217,133,255,0.28)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let j = 0; j <= SPOKES; j++) {
+      const ang = j * dA;
+      const r = maxR * (1 + JIT[j % SPOKES]);
+      const x = cx + Math.cos(ang) * r, y = cy + Math.sin(ang) * r;
+      if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    /* spokes, bowed gently toward their frame points */
+    ctx.strokeStyle = "rgba(217,133,255,0.34)";
+    ctx.lineWidth = 1;
+    for (let j = 0; j < SPOKES; j++) {
+      const ang = j * dA;
+      const rEnd = maxR * (1 + JIT[j]);
+      const bx = cx + Math.cos(ang) * rEnd * 1.09;
+      const by = cy + Math.sin(ang) * rEnd * 1.09;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.quadraticCurveTo(bx, by, cx + Math.cos(ang) * rEnd, cy + Math.sin(ang) * rEnd);
+      ctx.stroke();
+    }
+
+    /* the hub */
+    ctx.strokeStyle = "rgba(217,133,255,0.4)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.stroke();
+
+    /* the capture spiral: a polygonal thread following the spokes,
+       spun from the frame inward, straight between spoke to spoke */
+    let spiderP = null, tangent = 0;
+    if (t > 0.02) {
+      const jS = Math.floor(N * (1 - Math.max(t, 0.05)));
+      ctx.save();
+      ctx.strokeStyle = "rgba(230,204,255,0.95)";
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = "round";
+      ctx.shadowColor = "rgba(217,133,255,0.8)";
+      ctx.shadowBlur = 5;
+      ctx.beginPath();
+      const p0 = vert(jS);
+      ctx.moveTo(p0.x, p0.y);
+      for (let j = jS + 1; j <= N; j++) {
+        const p = vert(j);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      /* the spider sits mid-thread on the newest segment, heading to the hub */
+      const segA = vert(jS);
+      const segB = vert(Math.min(jS + 1, N));
+      spiderP = { x: (segA.x + segB.x) / 2, y: (segA.y + segB.y) / 2 };
+      tangent = Math.atan2(segA.y - segB.y, segA.x - segB.x);
+    }
+
+    if (t < 1 && spiderP) {
+      drawSpider(ctx, spiderP.x, spiderP.y, tangent, phase, 2.2);
+    } else {
+      /* the spider reaches the hub */
+      const pulse = 0.5 + 0.5 * Math.sin(phase * 4);
+      ctx.fillStyle = `rgba(255,217,138,${0.45 + pulse * 0.55})`;
+      ctx.shadowColor = "rgba(255,217,138,0.9)";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 2.5 + pulse * 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function drawSpider(ctx, x, y, ang, phase, scl) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(ang);
+    ctx.scale(scl, scl);
+    ctx.lineCap = "round";
+    /* 8 splayed two-jointed legs, fanning back from the hips */
+    ctx.lineWidth = 2.6;
+    for (let side = -1; side <= 1; side += 2) {
+      for (let k = 0; k < 4; k++) {
+        const a = (0.5 + k * 0.24) * side;
+        const len = 10 + (3 - k) * 1.2;
+        const sway = Math.sin(phase * 9 + k * 1.7 + (side < 0 ? 0 : 2)) * 0.1;
+        const ang2 = Math.PI + a + sway;
+        const hipX = -1, hipY = side * 2.4;
+        const kneeX = hipX + Math.cos(ang2 * 0.8) * len * 0.55;
+        const kneeY = hipY + Math.sin(ang2 * 0.8) * len * 0.55;
+        const footX = hipX + Math.cos(ang2) * len;
+        const footY = hipY + Math.sin(ang2) * len;
+        ctx.beginPath();
+        ctx.moveTo(hipX, hipY);
+        ctx.lineTo(kneeX, kneeY);
+        ctx.lineTo(footX, footY);
+        ctx.stroke();
+      }
+    }
+    ctx.strokeStyle = "#e9dcff";
+    ctx.lineWidth = 1.3;
+    for (let side = -1; side <= 1; side += 2) {
+      for (let k = 0; k < 4; k++) {
+        const a = (0.5 + k * 0.24) * side;
+        const len = 10 + (3 - k) * 1.2;
+        const sway = Math.sin(phase * 9 + k * 1.7 + (side < 0 ? 0 : 2)) * 0.1;
+        const ang2 = Math.PI + a + sway;
+        const hipX = -1, hipY = side * 2.4;
+        const kneeX = hipX + Math.cos(ang2 * 0.8) * len * 0.55;
+        const kneeY = hipY + Math.sin(ang2 * 0.8) * len * 0.55;
+        const footX = hipX + Math.cos(ang2) * len;
+        const footY = hipY + Math.sin(ang2) * len;
+        ctx.beginPath();
+        ctx.moveTo(hipX, hipY);
+        ctx.lineTo(kneeX, kneeY);
+        ctx.lineTo(footX, footY);
+        ctx.stroke();
+      }
+    }
+    /* light body, dark outline, so it stands out from the violet web */
+    ctx.fillStyle = "#efe6ff";
+    ctx.strokeStyle = "#4a1270";
+    ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.ellipse(-3.6, 0, 5.4, 3.9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#c9a6ff";
+    ctx.beginPath(); ctx.ellipse(1.6, 0, 2.9, 2.4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffd0ea";
+    ctx.beginPath(); ctx.arc(5.2, 0, 1.9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.beginPath(); ctx.arc(-4.6, -1.2, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function runLoader() {
+    const ctx = sizeCanvas(webCanvas);
+    const w = webCanvas.clientWidth, h = webCanvas.clientHeight;
+    loadT0 = performance.now();
+
+    function frame(now) {
+      const elapsed = now - loadT0;
+      const t = Math.min(elapsed / MIN_LOAD_MS, 1);
+      const eased = 1 - Math.pow(1 - t, 2.2); /* gentle ease-out so the finish feels like a flourish */
+
+      ctx.clearRect(0, 0, w, h);
+      drawWeb(ctx, eased, w, h, now / 1000);
+
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else if (!loadDone) {
+        loadDone = true;
+        setTimeout(() => poof(ctx, w, h), 260);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* the spider vanishes into the hub in a violet puff, then the site pours out */
+  function poof(ctx, w, h) {
+    const cx = w / 2, cy = h * 0.40;
+    const COLORS = ["#d985ff", "#ff5fb2", "#ffd98a", "#e9dcff", "#95b3ec"];
+    const parts = [];
+    for (let i = 0; i < 52; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const spd = 40 + Math.random() * 170;
+      parts.push({
+        x: cx, y: cy,
+        vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+        life: 1, decay: 1.4 + Math.random() * 1.8,
+        r: 1.6 + Math.random() * 3.6,
+        c: COLORS[i % COLORS.length]
+      });
+    }
+    const t0 = performance.now();
+    (function loop(now) {
+      const dt = (now - t0) / 1000;
+      ctx.clearRect(0, 0, w, h);
+      drawWeb(ctx, 1, w, h, now / 1000);
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      let alive = false;
+      for (const p of parts) {
+        if (p.life <= 0) continue;
+        alive = true;
+        p.life -= dt * p.decay;
+        if (p.life <= 0) continue;
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        p.vx *= 0.96; p.vy *= 0.96;
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.fillStyle = p.c;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      if (alive && performance.now() - t0 < 1500) requestAnimationFrame(loop);
+      else showIntro();
+    })(t0);
+  }
+
+  window.addEventListener("resize", () => {
+    const ctx = sizeCanvas(webCanvas);
+    const w = webCanvas.clientWidth, h = webCanvas.clientHeight;
+    if (!loadDone) drawWeb(ctx, 0.02, w, h, 0);
+  });
+
+  /* the front door: after the web is spun, ask how the web should call you */
+  function showIntro() {
+    const card = document.getElementById("introCard");
+    const name = store.get("vwc-member", "");
+    document.getElementById("introBack").hidden = !name;
+    document.getElementById("introJoin").hidden = !!name;
+    document.getElementById("introSwitchBtn").hidden = !name;
+    if (name) document.getElementById("introBackName").textContent = name;
+    card.classList.add("show");
+  }
+
+  function enterCafe() {
+    const card = document.getElementById("introCard");
+    card.classList.add("bye");
+    const desktop = document.getElementById("desktop");
+    setTimeout(() => {
+      desktop.classList.add("on");
+      startMotes();
+      initDaily();
+      initCommunity();
+    }, 220);
+    setTimeout(() => loader.classList.add("iris"), 420);
+    setTimeout(() => { loader.style.display = "none"; }, 2250);
+  }
+
+  function initIntro() {
+    const nameInput = document.getElementById("introName");
+    const joinBtn = document.getElementById("introJoinBtn");
+    const enterBtn = document.getElementById("introEnterBtn");
+    const guestBtn = document.getElementById("introGuestBtn");
+    const switchBtn = document.getElementById("introSwitchBtn");
+    const join = () => {
+      const n = nameInput.value.trim().replace(/\s+/g, " ");
+      if (n) store.set("vwc-member", n.slice(0, 20));
+      enterCafe();
+    };
+    joinBtn.addEventListener("click", join);
+    nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") join(); });
+    enterBtn.addEventListener("click", enterCafe);
+    guestBtn.addEventListener("click", enterCafe);
+    switchBtn.addEventListener("click", () => {
+      store.set("vwc-member", "");
+      document.getElementById("introBack").hidden = true;
+      document.getElementById("introJoin").hidden = false;
+      document.getElementById("introSwitchBtn").hidden = true;
+      nameInput.focus();
+    });
+  }
+
+  /* ───────────────── 5 · ambient motes ───────────────── */
+  function startMotes() {
+    const canvas = document.getElementById("motesCanvas");
+    const ctx = sizeCanvas(canvas);
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const COLORS = ["217,133,255", "166,120,255", "255,95,178", "255,217,138"];
+    const motes = Array.from({ length: 70 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: 0.6 + Math.random() * 1.8,
+      c: COLORS[Math.floor(Math.random() * COLORS.length)],
+      vy: -(0.05 + Math.random() * 0.22),
+      vx: (Math.random() - 0.5) * 0.12,
+      tw: Math.random() * Math.PI * 2,
+      ts: 0.5 + Math.random() * 1.6
+    }));
+
+    (function loop(now) {
+      ctx.clearRect(0, 0, w, h);
+      for (const m of motes) {
+        m.x += m.vx; m.y += m.vy;
+        if (m.y < -8) { m.y = h + 8; m.x = Math.random() * w; }
+        if (m.x < -8) m.x = w + 8; else if (m.x > w + 8) m.x = -8;
+        const tw = 0.35 + 0.65 * Math.abs(Math.sin(now / 1000 * m.ts + m.tw));
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${m.c},${tw})`;
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      requestAnimationFrame(loop);
+    })(performance.now());
+  }
+
+  /* ───────────────── 6 · daily notes & collection ───────────────── */
+  function initDaily() {
+    /* date */
+    const now = new Date();
+    const ord = (n) => {
+      const s = ["th", "st", "nd", "rd"], v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    };
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    document.getElementById("todayEl").textContent =
+      `${days[now.getDay()]}, the ${ord(now.getDate())} of ${months[now.getMonth()]} ${now.getFullYear()} — a good night for moths`;
+
+    /* note saving */
+    const input = document.getElementById("thoughtInput");
+    const saveBtn = document.getElementById("saveThoughtBtn");
+    const saveMsg = document.getElementById("saveMsg");
+    const draftKey = "vwc-draft";
+    input.value = store.get(draftKey, "");
+    input.addEventListener("input", () => store.set(draftKey, input.value));
+
+    saveBtn.addEventListener("click", () => {
+      const text = input.value.trim();
+      if (!text) return;
+      addCollected(text, "thought");
+      input.value = "";
+      store.set(draftKey, "");
+      saveMsg.hidden = false;
+      setTimeout(() => { saveMsg.hidden = true; }, 2600);
+    });
+
+    /* poetry */
+    showRandomPoem();
+    document.getElementById("newPoemBtn").addEventListener("click", showRandomPoem);
+    const keepBtn = document.getElementById("keepPoemBtn");
+    keepBtn.addEventListener("click", () => {
+      const t = document.getElementById("poemText").textContent;
+      const a = document.getElementById("poemAuthor").textContent;
+      if (!t.trim()) return;
+      addCollected(t + "\n— " + a, "poem");
+      keepBtn.classList.add("kept");
+      setTimeout(() => keepBtn.classList.remove("kept"), 2000);
+    });
+
+    renderCollected();
+  }
+
+  function showRandomPoem() {
+    const poemText = document.getElementById("poemText");
+    const authorEl = document.getElementById("poemAuthor");
+    const last = store.get("vwc-lastPoem", -1);
+    let idx = Math.floor(Math.random() * POEMS.length);
+    if (POEMS.length > 1) while (idx === last) idx = Math.floor(Math.random() * POEMS.length);
+    store.set("vwc-lastPoem", idx);
+    const p = POEMS[idx];
+    poemText.textContent = p.text;
+    authorEl.textContent = `${p.author} · ${p.source}`;
+  }
+
+  function addCollected(text, kind) {
+    const list = store.get("vwc-collected", []);
+    list.unshift({ t: text, k: kind });
+    store.set("vwc-collected", list);
+    renderCollected();
+  }
+
+  function renderCollected() {
+    const ul = document.getElementById("collectedList");
+    ul.innerHTML = "";
+    const list = store.get("vwc-collected", []);
+    if (!list.length) {
+      const li = document.createElement("li");
+      li.className = "cursive";
+      li.textContent = "the web is empty — leave it a thought";
+      ul.appendChild(li);
+      return;
+    }
+    for (const item of list) {
+      const li = document.createElement("li");
+      const span = document.createElement("span");
+      span.style.whiteSpace = "pre-wrap";
+      span.textContent = (item.k === "poem" ? "❦ " : "✎ ") + item.t;
+      const del = document.createElement("span");
+      del.className = "del";
+      del.textContent = "✕";
+      del.title = "let go of this";
+      del.addEventListener("click", () => {
+        const l = store.get("vwc-collected", []);
+        const i = l.indexOf(item);
+        if (i > -1) { l.splice(i, 1); store.set("vwc-collected", l); renderCollected(); }
+      });
+      li.appendChild(span);
+      li.appendChild(del);
+      ul.appendChild(li);
+    }
+  }
+
+  /* ───────────────── 7 · window close buttons ───────────────── */
+  document.querySelectorAll(".window").forEach((win) => {
+    const minBtn = win.querySelector(".minimize");
+    minBtn.addEventListener("click", () => closeWin(win));
+  });
+
+  /* ───────────────── 8 · lore modals ───────────────── */
+  const loreModal = document.getElementById("loreModal");
+  const loreTitle = document.getElementById("loreTitle");
+  const loreText = document.getElementById("loreText");
+
+  document.querySelectorAll(".menu-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const entry = LORE[btn.dataset.q];
+      loreTitle.textContent = entry.title;
+      loreText.textContent = entry.text;
+      loreModal.hidden = false;
+    });
+  });
+  document.getElementById("loreClose").addEventListener("click", () => { loreModal.hidden = true; });
+  loreModal.addEventListener("click", (e) => { if (e.target === loreModal) loreModal.hidden = true; });
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape") loreModal.hidden = true; });
+
+  /* ───────────────── 9 · desk buttons (show/hide windows) ───────────────── */
+  const deskBtns = document.querySelectorAll(".desk-btn");
+  function closeWin(win) { win.classList.add("closed"); }
+  function setWin(win, open) {
+    win.classList.toggle("closed", !open);
+    const btn = [...deskBtns].find((b) => b.dataset.win === win.id);
+    if (btn) btn.classList.toggle("on", open);
+  }
+  deskBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const win = document.getElementById(btn.dataset.win);
+      setWin(win, win.classList.contains("closed"));
+      if (win.id === "wallWin" && !win.classList.contains("closed")) {
+        store.set("vwc-wall-seen", Date.now());
+        const nb = document.getElementById("notifyBtn");
+        if (nb) { nb.classList.remove("glow"); }
+      }
+    });
+  });
+
+  /* ───────── 10 · the community (guild · wall · welcome · bell) ───────── */
+  /* Live community runs on YOUR FREE Supabase project.
+       1) Run community.sql in the Supabase SQL editor (creates the tables).
+       2) Dashboard → Authentication → Sign-in method → enable "Anonymous".
+       3) Dashboard → Database → Realtime → enable `messages`, `wall`,
+          `questions` and `checkins`.
+       4) Paste the Project URL + anon key below.
+     Leave them empty to keep cozy guest mode — everything still works, just
+     privately on this device, with chimeras for company. */
+  const COMMUNITY = {
+    supabase: { url: "", anonKey: "" }
+  };
+  const LIVE = !!(COMMUNITY.supabase.url && COMMUNITY.supabase.anonKey);
+
+  const CHIMERA_LINES = [
+    "Auren: The kettle sings for you, dear one.",
+    "Veyla: I saved you a seat by the window.",
+    "Ost: The moths report a quiet night on the web.",
+    "Nyxiel: I mended a loose thought on your behalf.",
+    "The harp plays itself, softly, somewhere.",
+    "Auren: Another cup of dissolved night?",
+    "Veyla: Someone left a poem on the counter. I kept it.",
+    "Ost: The door is warm. Stay a while."
+  ];
+  const CHIMERA_ANSWERS = [
+    "Auren: To chat with the guild, open ⚔ The Guild Hall and speak into the web — your words reach everyone awake.",
+    "Veyla: To leave a note for a friend, open ✉ The Message Wall and write their name in the 'for' box. It sleeps in their inbox until they return.",
+    "Ost: The Daily Web is the check-in button on the Welcome Desk. Touch it once a day so the café knows you were here.",
+    "Nyxiel: The Bell is on the Welcome Desk too. Set a time and the café will ring for you each day.",
+    "Auren: Save the poems you love with the heart in Poetry of the Night — they are kept in your Letter Home.",
+    "Veyla: Notes left for 'anyone' hang on the public wall. Notes for a name wait quietly in that member's inbox.",
+    "Ost: Nothing here is ever lost. The web remembers everything you forget to keep.",
+    "Nyxiel: You may ask again whenever you like. We are usually awake."
+  ];
+
+  let supabasePromise = null;
+  function getSupabase() {
+    if (supabasePromise) return supabasePromise;
+    supabasePromise = new Promise((resolve, reject) => {
+      if (window.supabase) {
+        resolve(window.supabase.createClient(COMMUNITY.supabase.url, COMMUNITY.supabase.anonKey));
+        return;
+      }
+      const s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+      s.onload = () => resolve(window.supabase.createClient(COMMUNITY.supabase.url, COMMUNITY.supabase.anonKey));
+      s.onerror = () => reject(new Error("could not load the etherwire link"));
+      document.head.appendChild(s);
+    });
+    return supabasePromise;
+  }
+
+  function myName() {
+    const el = document.getElementById("guildName");
+    const n = el ? el.value.trim() : "";
+    if (!n) return "moth-" + Math.floor(1000 + Math.random() * 9000);
+    store.set("vwc-guildName", n);
+    return n;
+  }
+  function displayName() {
+    const el = document.getElementById("guildName");
+    return (el && el.value.trim()) || "";
+  }
+  function todayStr(d) {
+    const dt = d || new Date();
+    return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
+  }
+
+  function initCommunity() {
+    initGuildUI();
+    initWall();
+    initWelcome();
+    initBell();
+    initStreak();
+    registerPWA();
+  }
+
+  /* ══════════ the guild hall ══════════ */
+  function initGuildUI() {
+    const msgsEl = document.getElementById("guildMsgs");
+    const input = document.getElementById("guildInput");
+    const nameInput = document.getElementById("guildName");
+    const sendBtn = document.getElementById("guildSend");
+    const statusEl = document.getElementById("guildStatus");
+    nameInput.value = store.get("vwc-member", "") || store.get("vwc-guildName", "");
+
+    const pingBtn = document.getElementById("pingBtn");
+    if (pingBtn) {
+      const pingPref = store.get("vwc-ping", { on: true });
+      const paint = () => {
+        pingBtn.textContent = pingPref.on ? "🔔" : "🔕";
+        pingBtn.classList.toggle("muted", !pingPref.on);
+        pingBtn.title = pingPref.on ? "pings on — a chime when someone mentions your name" : "pings off";
+      };
+      paint();
+      pingBtn.addEventListener("click", () => {
+        pingPref.on = !pingPref.on;
+        store.set("vwc-ping", pingPref);
+        paint();
+        if (pingPref.on) { unlockAudio(); ping(); }
+      });
+    }
+
+    if (!LIVE) {
+      statusEl.textContent = "guest mode · a quiet room at the café, just for you";
+      const local = store.get("vwc-guild-msgs", []);
+      for (const m of local) appendMsg(m, false, false, true);
+      let botTimer;
+      const bot = () => {
+        const line = CHIMERA_LINES[Math.floor(Math.random() * CHIMERA_LINES.length)];
+        appendMsg({ name: "chimera", text: line, t: Date.now() }, false, true);
+        botTimer = setTimeout(bot, 24000 + Math.random() * 26000);
+      };
+      botTimer = setTimeout(bot, 9000);
+
+      const send = () => {
+        const text = input.value.trim();
+        if (!text) return;
+        const m = { name: myName(), text, t: Date.now() };
+        const list = store.get("vwc-guild-msgs", []);
+        list.push(m);
+        store.set("vwc-guild-msgs", list.slice(-100));
+        appendMsg(m, true);
+        input.value = "";
+        if (Math.random() < 0.5) {
+          setTimeout(() => {
+            const line = CHIMERA_LINES[Math.floor(Math.random() * CHIMERA_LINES.length)];
+            appendMsg({ name: "chimera", text: line, t: Date.now() }, false, true);
+          }, 2500 + Math.random() * 3500);
+        }
+      };
+      sendBtn.addEventListener("click", send);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+      return;
+    }
+
+    /* ── live guild over Supabase ── */
+    statusEl.textContent = "reaching for the etherwire…";
+    getSupabase().then((supabase) => {
+      supabase.auth.signInAnonymously().then(async () => {
+        statusEl.classList.add("live");
+        statusEl.textContent = "etherwire lit — the guild is open";
+        const { data } = await supabase.from("messages").select("*").order("created_at", { ascending: false }).limit(100);
+        msgsEl.innerHTML = "";
+        for (const m of [...(data || [])].reverse()) appendMsg(m, false, false, true);
+
+        supabase.channel("guild-chat").on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => appendMsg(payload.new, false)).subscribe();
+
+        const p = supabase.channel("guild-presence");
+        p.on("presence", { event: "sync" }, () => {
+          const n = Object.keys(p.presenceState()).length;
+          statusEl.textContent = "etherwire lit · " + n + (n === 1 ? " soul" : " souls") + " in the guild hall";
+        }).subscribe(async (s) => { if (s === "SUBSCRIBED") await p.track({ name: myName() }); });
+
+        const send = async () => {
+          const text = input.value.trim();
+          if (!text) return;
+          await supabase.from("messages").insert({ name: myName(), text });
+          input.value = "";
+        };
+        sendBtn.addEventListener("click", send);
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+      }).catch((e) => {
+        statusEl.textContent = "the guild door is locked: " + e.message;
+      });
+    }).catch((e) => {
+      statusEl.textContent = "the etherwire broke — " + e.message;
+    });
+  }
+
+  function appendMsg(m, mine, chimera, silent) {
+    if (!m || !m.text) return;
+    const msgsEl = document.getElementById("guildMsgs");
+    const div = document.createElement("div");
+    div.className = "guild-msg" + (mine ? " mine" : "") + (chimera ? " chimera" : "");
+    const who = document.createElement("span");
+    who.className = "who";
+    who.textContent = (chimera ? "🕸 " : "") + (m.name || "a nameless moth");
+    const txt = document.createElement("span");
+    txt.className = "txt";
+    txt.textContent = " " + m.text;
+    div.appendChild(who);
+    div.appendChild(txt);
+    msgsEl.appendChild(div);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    if (!silent && !mine && !chimera) maybePing(m.name, m.text);
+  }
+
+  /* ══════════ the message wall ══════════ */
+  function initWall() {
+    const to = document.getElementById("wallTo");
+    const input = document.getElementById("wallInput");
+    const sendBtn = document.getElementById("wallSend");
+    const statusEl = document.getElementById("wallStatus");
+    const wallWinEl = document.getElementById("wallWin");
+    const notifyBtn = document.getElementById("notifyBtn");
+    const notifyCount = document.getElementById("notifyCount");
+    const seenKey = "vwc-wall-seen";
+
+    const updateNotify = (unread) => {
+      if (!notifyBtn) return;
+      if (unread > 0) {
+        notifyBtn.classList.add("glow");
+        notifyBtn.title = unread + (unread === 1 ? " message" : " messages") + " for you";
+        notifyCount.hidden = false;
+        notifyCount.textContent = unread > 99 ? "99+" : unread;
+      } else {
+        notifyBtn.classList.remove("glow");
+        notifyBtn.title = "no new messages";
+        notifyCount.hidden = true;
+      }
+    };
+    if (notifyBtn) notifyBtn.addEventListener("click", () => {
+      store.set(seenKey, Date.now());
+      updateNotify(0);
+      setWin(wallWinEl, true);
+    });
+
+    const render = (notes) => {
+      const me = displayName().toLowerCase();
+      const inboxEl = document.getElementById("wallInbox");
+      const listEl = document.getElementById("wallList");
+      inboxEl.innerHTML = "";
+      listEl.innerHTML = "";
+      const mine = notes.filter((n) => n.to && n.to.toLowerCase() !== "anyone" && n.to.toLowerCase() === me);
+      const pub = notes.filter((n) => !n.to || n.to.toLowerCase() === "anyone");
+      if (mine.length) {
+        const h = document.createElement("p");
+        h.className = "collected-label cursive";
+        h.textContent = "your inbox";
+        inboxEl.appendChild(h);
+        for (const n of mine.slice(0, 12)) {
+          const div = document.createElement("div");
+          div.className = "wall-note mine-inbox";
+          const who = document.createElement("span");
+          who.className = "who";
+          who.textContent = n.from + " wrote: ";
+          const txt = document.createElement("span");
+          txt.className = "txt";
+          txt.textContent = n.text;
+          div.appendChild(who);
+          div.appendChild(txt);
+          inboxEl.appendChild(div);
+        }
+      }
+      if (pub.length) {
+        for (const n of pub.slice(0, 30)) {
+          const div = document.createElement("div");
+          div.className = "wall-note";
+          const who = document.createElement("span");
+          who.className = "who";
+          who.textContent = n.from + ": ";
+          const txt = document.createElement("span");
+          txt.className = "txt";
+          txt.textContent = n.text;
+          div.appendChild(who);
+          div.appendChild(txt);
+          listEl.appendChild(div);
+        }
+      } else if (!mine.length) {
+        listEl.textContent = "the wall is empty — pin the first note.";
+      }
+      const seen = store.get(seenKey, 0);
+      let unread = 0;
+      for (const n of notes) {
+        const t = n.created_at ? new Date(n.created_at).getTime() : (n.t || 0);
+        if (!t || isNaN(t)) continue;
+        const isMine = n.to && n.to.toLowerCase() !== "anyone" && n.to.toLowerCase() === me;
+        if (isMine && t > seen) unread++;
+      }
+      updateNotify(unread);
+    };
+
+    const send = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      const note = { from: myName(), to: (to.value.trim() || "anyone"), text, t: Date.now() };
+      if (!LIVE) {
+        const list = store.get("vwc-wall", []);
+        list.unshift(note);
+        store.set("vwc-wall", list.slice(-60));
+        render(list);
+        input.value = "";
+        statusEl.textContent = "guest mode · notes stay on this device";
+        return;
+      }
+      getSupabase().then((supabase) => {
+        supabase.from("wall").insert(note).then(() => { input.value = ""; });
+      });
+    };
+
+    if (!LIVE) {
+      statusEl.textContent = "guest mode · notes stay on this device";
+      render(store.get("vwc-wall", []));
+      sendBtn.addEventListener("click", send);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+      return;
+    }
+
+    statusEl.textContent = "reaching for the etherwire…";
+    getSupabase().then((supabase) => {
+      supabase.auth.signInAnonymously().then(async () => {
+        statusEl.textContent = "etherwire lit — the wall is open";
+        const { data } = await supabase.from("wall").select("*").order("created_at", { ascending: false }).limit(60);
+        render(data || []);
+        supabase.channel("wall-live").on("postgres_changes", { event: "INSERT", schema: "public", table: "wall" }, async () => {
+          const { data: d2 } = await supabase.from("wall").select("*").order("created_at", { ascending: false }).limit(60);
+          render(d2 || []);
+        }).subscribe();
+        sendBtn.addEventListener("click", send);
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+      });
+    }).catch(() => { statusEl.textContent = "the etherwire is dark — the wall waits."; });
+  }
+
+  /* ══════════ the welcome desk ══════════ */
+  function initWelcome() {
+    const greet = document.getElementById("welcomeGreeting");
+    const checkinBtn = document.getElementById("checkinBtn");
+    const checkinInfo = document.getElementById("checkinInfo");
+    const qaInput = document.getElementById("qaInput");
+    const qaAsk = document.getElementById("qaAsk");
+
+    const h = new Date().getHours();
+    const tod = h < 5 ? "night" : h < 12 ? "morning" : h < 18 ? "afternoon" : "evening";
+    const nm = displayName();
+    greet.textContent = nm
+      ? "Good " + tod + ", " + nm + ". The kettle is already warm for you."
+      : "Good " + tod + ", stranger. Pull up a chair — the chimeras have been expecting you.";
+
+    const myChecked = store.get("vwc-checkins", []);
+    const checkedToday = myChecked.includes(todayStr());
+    if (checkedToday) {
+      checkinBtn.classList.add("checked");
+      checkinBtn.textContent = "✓ you're here today";
+    }
+
+    if (!LIVE) {
+      checkinInfo.textContent = checkedToday ? "the guest book shows you here" : "no one has signed the book yet today";
+      checkinBtn.addEventListener("click", () => {
+        const list = store.get("vwc-checkins", []);
+        if (list.includes(todayStr())) return;
+        list.push(todayStr());
+        store.set("vwc-checkins", list.slice(-60));
+        checkinBtn.classList.add("checked");
+        checkinBtn.textContent = "✓ you're here today";
+        checkinInfo.textContent = "the guest book shows you here";
+      });
+      renderQA(store.get("vwc-qa", []));
+      const askQA = () => {
+        const q = qaInput.value.trim();
+        if (!q) return;
+        const list = store.get("vwc-qa", []);
+        const item = { id: Date.now(), name: myName(), question: q, answer: null, t: Date.now() };
+        list.unshift(item);
+        store.set("vwc-qa", list.slice(-40));
+        qaInput.value = "";
+        renderQA(list);
+        setTimeout(() => {
+          const cur = store.get("vwc-qa", []);
+          const it = cur.find((x) => x.id === item.id);
+          if (it) {
+            it.answer = CHIMERA_ANSWERS[Math.floor(Math.random() * CHIMERA_ANSWERS.length)];
+            store.set("vwc-qa", cur);
+            renderQA(cur);
+          }
+        }, 2200 + Math.random() * 1800);
+      };
+      qaAsk.addEventListener("click", askQA);
+      qaInput.addEventListener("keydown", (e) => { if (e.key === "Enter") askQA(); });
+      return;
+    }
+
+    checkinInfo.textContent = "reaching for the etherwire…";
+    getSupabase().then((supabase) => {
+      supabase.auth.signInAnonymously().then(async () => {
+        const today = todayStr();
+        const countToday = async () => {
+          const { data } = await supabase.from("checkins").select("name").eq("day", today);
+          const c = data ? data.length : 0;
+          checkinInfo.textContent = c + (c === 1 ? " member" : " members") + " here today";
+          return c;
+        };
+        const c0 = await countToday();
+        if (checkedToday) checkinInfo.textContent = "you + " + Math.max(c0 - 1, 0) + " other" + (c0 - 1 === 1 ? "" : "s") + " here today";
+        const { data: mine } = await supabase.from("checkins").select("id").eq("day", today).eq("name", myName());
+        if (mine && mine.length) {
+          checkinBtn.classList.add("checked");
+          checkinBtn.textContent = "✓ you're here today";
+        }
+        checkinBtn.addEventListener("click", async () => {
+          if (checkinBtn.classList.contains("checked")) return;
+          await supabase.from("checkins").insert({ name: myName() });
+          checkinBtn.classList.add("checked");
+          checkinBtn.textContent = "✓ you're here today";
+          countToday();
+        });
+        supabase.channel("checkin-live").on("postgres_changes", { event: "INSERT", schema: "public", table: "checkins" }, countToday).subscribe();
+
+        const fetchQA = async () => {
+          const { data } = await supabase.from("questions").select("*").order("created_at", { ascending: false }).limit(40);
+          return data || [];
+        };
+        renderQA(await fetchQA());
+        const askQA = async () => {
+          const q = qaInput.value.trim();
+          if (!q) return;
+          await supabase.from("questions").insert({ name: myName(), question: q });
+          qaInput.value = "";
+        };
+        qaAsk.addEventListener("click", askQA);
+        qaInput.addEventListener("keydown", (e) => { if (e.key === "Enter") askQA(); });
+        supabase.channel("qa-live").on("postgres_changes", { event: "*", schema: "public", table: "questions" }, async () => {
+          renderQA(await fetchQA());
+        }).subscribe();
+      });
+    }).catch(() => { checkinInfo.textContent = "the etherwire is dark — check in again later."; });
+  }
+
+  function renderQA(items) {
+    const qaList = document.getElementById("qaList");
+    qaList.innerHTML = "";
+    if (!items || !items.length) {
+      qaList.textContent = "the café is listening — ask anything.";
+      return;
+    }
+    for (const it of items.slice(0, 20)) {
+      const div = document.createElement("div");
+      div.className = "qa-item";
+      const q = document.createElement("p");
+      q.className = "q";
+      const who = document.createElement("span");
+      who.className = "who";
+      who.textContent = (it.name || "a nameless moth") + ": ";
+      q.appendChild(who);
+      q.appendChild(document.createTextNode(it.question));
+      div.appendChild(q);
+      if (it.answer) {
+        const a = document.createElement("p");
+        a.className = "a";
+        a.textContent = "— " + it.answer;
+        div.appendChild(a);
+      } else if (LIVE) {
+        const row = document.createElement("div");
+        row.className = "qa-answer";
+        const inp = document.createElement("input");
+        inp.placeholder = "answer…";
+        const btn = document.createElement("button");
+        btn.textContent = "reply";
+        btn.addEventListener("click", async () => {
+          const t = inp.value.trim();
+          if (!t) return;
+          try {
+            const supabase = await getSupabase();
+            await supabase.from("questions").update({ answer: myName() + ": " + t }).eq("id", it.id);
+          } catch (err) { }
+        });
+        row.appendChild(inp);
+        row.appendChild(btn);
+        div.appendChild(row);
+      } else {
+        const p = document.createElement("p");
+        p.className = "a";
+        p.textContent = "— a chimera is thinking…";
+        div.appendChild(p);
+      }
+      qaList.appendChild(div);
+    }
+  }
+
+  /* ══════════ the daily bell + return streak ══════════ */
+  function initBell() {
+    const timeInput = document.getElementById("remindTime");
+    const btn = document.getElementById("remindBtn");
+    const info = document.getElementById("remindInfo");
+    const bell = store.get("vwc-bell", { on: false, hh: 20, mm: 0 });
+    const fmt = (hh, mm) => String(hh).padStart(2, "0") + ":" + String(mm).padStart(2, "0");
+
+    if (bell.on) {
+      timeInput.value = fmt(bell.hh, bell.mm);
+      btn.textContent = "ringing at " + fmt(bell.hh, bell.mm);
+      btn.classList.add("on");
+      scheduleBell(bell.hh, bell.mm, info);
+    } else {
+      info.textContent = "the bell is silent for now";
+    }
+
+    btn.addEventListener("click", async () => {
+      const cur = store.get("vwc-bell", { on: false, hh: 20, mm: 0 });
+      if (cur.on) {
+        store.set("vwc-bell", { on: false, hh: cur.hh, mm: cur.mm });
+        btn.textContent = "ring the bell";
+        btn.classList.remove("on");
+        info.textContent = "the bell is silent for now";
+        return;
+      }
+      if ("Notification" in window && Notification.permission === "default") {
+        try { await Notification.requestPermission(); } catch (err) { }
+      }
+      if (!bellCtx) unlockAudio();
+      const parts = timeInput.value.split(":").map(Number);
+      const hh = parts[0] || 20, mm = parts[1] || 0;
+      store.set("vwc-bell", { on: true, hh, mm });
+      btn.textContent = "ringing at " + fmt(hh, mm);
+      btn.classList.add("on");
+      scheduleBell(hh, mm, info);
+    });
+  }
+
+  function scheduleBell(hh, mm, infoEl) {
+    const now = new Date();
+    const target = new Date(now);
+    target.setHours(hh, mm, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1);
+    const wait = target - now;
+    const update = () => {
+      if (infoEl) infoEl.textContent = "next ring: " + target.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    };
+    update();
+    setTimeout(() => {
+      fireBell();
+      /* hold the "just rang" message a while before showing tomorrow's time */
+      setTimeout(() => scheduleBell(hh, mm, infoEl), 20000);
+    }, wait);
+  }
+
+  function fireBell() {
+    try { chime(); } catch (err) { }
+    try {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("The Violet Web Café ☾", { body: "The chimeras are waiting for you in the guild hall." });
+      }
+    } catch (err) { }
+    const info = document.getElementById("remindInfo");
+    if (info) info.textContent = "the bell just rang — welcome back ☾";
+  }
+
+  let audioCtx = null;
+  function unlockAudio() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+  }
+  window.addEventListener("pointerdown", unlockAudio, { passive: true });
+  window.addEventListener("keydown", unlockAudio, { passive: true });
+
+  function chime() {
+    unlockAudio();
+    if (!audioCtx) return;
+    const ctx = audioCtx;
+    const t = ctx.currentTime;
+    [880, 659.25, 987.77].forEach((f, i) => {
+      const o = ctx.createOscillator();
+      o.type = "sine";
+      o.frequency.value = f;
+      const g = ctx.createGain();
+      const t0 = t + i * 0.3;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.22, t0 + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.6);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start(t0);
+      o.stop(t0 + 1.7);
+    });
+  }
+
+  function ping() {
+    unlockAudio();
+    if (!audioCtx) return;
+    const ctx = audioCtx;
+    const t = ctx.currentTime;
+    [1318.51, 1760, 2637.02].forEach((f, i) => {
+      const o = ctx.createOscillator();
+      o.type = "sine";
+      o.frequency.value = f;
+      const g = ctx.createGain();
+      const t0 = t + i * 0.09;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.2, t0 + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.55);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start(t0);
+      o.stop(t0 + 0.6);
+    });
+  }
+
+  let lastPingAt = 0;
+  function maybePing(name, text) {
+    const pref = store.get("vwc-ping", { on: true });
+    if (!pref.on) return;
+    const me = displayName();
+    const sleeping = document.hidden;
+    const mentioned = !!me && !!name && name.toLowerCase() !== me.toLowerCase() &&
+      (text.toLowerCase().includes(me.toLowerCase()) || text.toLowerCase().includes("@" + me.toLowerCase()));
+    if (!mentioned && !(LIVE && sleeping)) return;
+    const now = Date.now();
+    if (now - lastPingAt < 8000) return;
+    lastPingAt = now;
+    ping();
+  }
+
+  function initStreak() {
+    const el = document.getElementById("streakEl");
+    const visits = store.get("vwc-visits", []);
+    if (!visits.includes(todayStr())) {
+      visits.push(todayStr());
+      store.set("vwc-visits", visits.slice(-400));
+    }
+    let streak = 1;
+    const d = new Date();
+    for (let i = 1; i < 400; i++) {
+      const prev = new Date(d);
+      prev.setDate(d.getDate() - i);
+      if (visits.includes(todayStr(prev))) streak++;
+      else break;
+    }
+    el.textContent = streak > 1
+      ? "you've come back " + streak + " days in a row — the web is glad of it ☾"
+      : "a fresh visit — come back tomorrow and start a thread of days";
+  }
+
+  function registerPWA() {
+    try {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(() => { /* no sw here — that's fine */ });
+      }
+    } catch (err) { }
+  }
+
+  /* ───────────── 11 · begin ═ the spider spins ═──────────── */
+  if (window.__cafeDebug) {
+    window.__cafeDebug.maybePing = maybePing;
+    window.__cafeDebug.ping = ping;
+    window.__cafeDebug.appendMsg = appendMsg;
+    window.__cafeDebug.resetThrottle = () => { lastPingAt = 0; };
+  }
+  initIntro();
+  runLoader();
+})();
+
+</script>
+</body>
+</html>
