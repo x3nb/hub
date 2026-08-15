@@ -1,0 +1,2684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Violet Web Café · Etherrealm</title>
+<meta name="description" content="A daily desktop for collecting thoughts and romantic poetry, kept by the chimera animals of a café in the etherrealm.">
+<meta name="theme-color" content="#3c0b5e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🕷️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Klee+One&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   The Violet Web Café — a desktop in the etherrealm
+   palette: deeppurple · hotpink-violet · inkblue (+ faded tones)
+   fonts:   UnifrakturMaguntia (titles) · Klee One (ui/body)
+            Homemade Apple (letters, notes, poetry)
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --deeppurple: #8a2be2;
+  --deeppurple-2:#6a1cb8;
+  --hotpink:    #ff007f;
+  --violet:     #a678ff;
+  --violet-2:   #d985ff;
+  --inkblue:    #0a0412;
+  --inkblue-2:  #130821;
+  --faded-purple: #2a0a4d;
+  --faded-violet: #c4a9e8;
+  --light-violet: #b9d0f7;
+  --ink:         #c3c9dc;   /* soft light grey for reading text */
+  --cornflower:  #95b3ec;   /* cornflower blue for poems & accents */
+  --gold:        #a9c4f0;
+  --fuchsia:     #d900ff;
+  --glass: rgba(18, 10, 40, .74);
+  --glass-line: rgba(217, 0, 255, .4);
+  --cursive: 'Homemade Apple', cursive;
+  --ui: 'Klee One', 'Segoe UI', sans-serif;
+  --fraktur: 'UnifrakturMaguntia', serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+html { color-scheme: dark; }
+
+body {
+  font-family: var(--ui);
+  color: var(--light-violet);
+  overflow: hidden;
+  background: var(--inkblue);
+}
+
+.cursive { font-family: var(--cursive); }
+
+/* ══════════ LOADER ══════════ */
+#loader {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(120% 90% at 50% 10%, var(--deeppurple-2) 0%, var(--deeppurple) 40%, var(--inkblue-2) 78%, var(--inkblue) 100%);
+  opacity: 1;
+  pointer-events: all;
+}
+/* after the door opens, the loader dissolves into the café — a soft fade, no iris */
+#loader.out { opacity: 0; pointer-events: none; transition: opacity .7s ease; }
+
+#webCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ══════════ DESKTOP ══════════ */
+#desktop {
+  position: fixed; inset: 0;
+  display: none;
+  overflow-y: auto;
+  background:
+    radial-gradient(130% 100% at 50% 0%, #3a1066 0%, #260847 38%, #170a28 74%, #0a0412 100%);
+}
+#desktop.on {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  gap: 1.1rem;
+  align-items: start;
+  padding: 0 3vw 5vh;
+}
+
+#motesCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* header */
+#header {
+  grid-column: 1 / -1;
+  position: relative; z-index: 5;
+  padding: 2.5vh 3vw 1vh; text-align: center;
+  pointer-events: none;
+}
+.site-title {
+  font-family: var(--fraktur); font-weight: normal;
+  font-size: clamp(2rem, 5.5vw, 3.8rem); line-height: 1.05;
+  color: var(--violet);
+  animation: titleShimmer 5s ease-in-out infinite;
+  user-select: none;
+}
+@keyframes titleShimmer {
+  0%, 100% { text-shadow: 0 0 10px rgba(166,120,255,.55), 0 0 26px rgba(138,43,226,.4); }
+  50% { text-shadow: 0 0 16px rgba(217,133,255,.95), 0 0 42px rgba(166,120,255,.5); }
+}
+.site-subtitle {
+  max-width: 640px; margin: .5em auto 0;
+  font-size: .95rem; line-height: 1.55; color: var(--faded-violet);
+}
+.desk-buttons {
+  margin-top: .9em; display: flex; gap: .7em; justify-content: center; flex-wrap: wrap;
+  pointer-events: auto;
+}
+.desk-btn {
+  font-family: var(--ui); font-size: .95rem; color: var(--light-violet);
+  padding: .5em 1.1em; cursor: pointer;
+  border: 1px solid var(--glass-line); border-radius: 99px;
+  background: linear-gradient(135deg, rgba(92,26,138,.55), rgba(14,18,48,.55));
+  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.desk-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(217,133,255,.35); }
+.desk-btn.on {
+  background: linear-gradient(135deg, var(--violet), var(--deeppurple-2));
+  color: #1a0430; border-color: var(--deeppurple-2);
+  box-shadow: 0 0 20px rgba(166,120,255,.55);
+}
+
+/* ══════════ MOVABLE LORE MENU ══════════ */
+#menu {
+  grid-column: 1 / -1;
+  position: relative; z-index: 40;
+  width: auto;
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: .3em .7em;
+  padding: .45em .9em;
+  border-radius: 99px;
+  border: 1px solid var(--glass-line);
+  background: rgba(20,12,48,.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 22px rgba(0,0,0,.4);
+}
+.menu-handle {
+  font-size: .78rem; letter-spacing: .14em; color: var(--violet-2);
+  padding: .2em .4em; cursor: default;
+  user-select: none;
+}
+.menu-handle .hint { opacity: .55; font-size: .68rem; }
+.menu-items { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: .2em; }
+.menu-item {
+  font-family: var(--ui); font-size: .98rem; text-align: center;
+  color: var(--light-violet); background: none; border: none;
+  padding: .32em .9em; cursor: pointer; border-radius: 99px;
+  transition: background .2s ease, color .2s ease;
+}
+.menu-item:hover {
+  color: var(--cornflower);
+  background: linear-gradient(90deg, rgba(166,120,255,.35), rgba(255,95,178,.18));
+}
+
+/* ══════════ WINDOWS ══════════ */
+.window {
+  position: relative; z-index: 10;
+  width: auto; min-width: 0;
+  border-radius: 16px;
+  border: 1px solid var(--glass-line);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 14px 44px rgba(0,0,0,.55);
+  display: flex; flex-direction: column;
+  touch-action: none;
+}
+.window.dragging { box-shadow: 0 24px 70px rgba(0,0,0,.7); }
+.win-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .55em .9em;
+  cursor: default; user-select: none;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, rgba(138,43,226,.32), rgba(166,120,255,.14));
+  border-bottom: 1px solid var(--glass-line);
+}
+.win-title {
+  font-family: var(--fraktur); font-size: 1.15rem;
+  letter-spacing: .03em;
+  color: var(--light-violet);
+  filter: drop-shadow(0 0 8px rgba(166,120,255,.25));
+}
+.win-title-wrap {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: .1em; min-width: 0; flex: 1 1 auto;
+  padding-right: .6em;
+}
+.win-sub {
+  font-family: var(--ui); font-style: italic;
+  font-size: .72rem; letter-spacing: .02em; line-height: 1.25;
+  color: var(--violet-2); opacity: .8;
+  max-width: 100%;
+}
+#noteWin .win-title    { color: #95b3ec; filter: drop-shadow(0 0 10px rgba(149,179,236,.4)); }    /* cornflower blue */
+#poemWin .win-title    { color: #95b3ec; filter: drop-shadow(0 0 10px rgba(149,179,236,.4)); }    /* cornflower blue */
+#galleryWin .win-title { color: #d985ff; filter: drop-shadow(0 0 10px rgba(217,133,255,.4)); }    /* violet-purple */
+#wallWin .win-title    { color: #95b3ec; filter: drop-shadow(0 0 10px rgba(149,179,236,.4)); }    /* cornflower blue */
+#bulletinWin .win-title { color: #a9c4f0; filter: drop-shadow(0 0 10px rgba(169,196,240,.4)); }   /* cornflower */
+#wishWin .win-title    { color: #c9a6ff; filter: drop-shadow(0 0 12px rgba(166,120,255,.35)); }   /* cloud lavender */
+.minimize {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid var(--glass-line);
+  color: var(--light-violet); background: rgba(20,12,48,.5);
+  cursor: pointer; font-size: 1rem; line-height: 1;
+}
+.minimize:hover { background: var(--deeppurple-2); color: #1a0430; }
+
+.win-body { padding: .9em 1.1em 1.1em; max-height: 48vh; overflow-y: auto; }
+.window.closed { display: none; }
+
+/* the violet spotlight · the window you were just drawn to */
+.window.spot {
+  z-index: 30;
+  border-color: var(--violet);
+  background: rgba(34, 16, 78, .94);
+  box-shadow: 0 0 0 3px rgba(166,120,255,.85), 0 0 60px rgba(138,43,226,.6), 0 14px 44px rgba(0,0,0,.55);
+  animation: spotPulse 1.1s ease-in-out 2;
+}
+.window.spot .win-head { background: linear-gradient(90deg, rgba(138,43,226,.6), rgba(166,120,255,.32)); }
+@keyframes spotPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(166,120,255,.85), 0 0 60px rgba(138,43,226,.6), 0 14px 44px rgba(0,0,0,.55); }
+  50% { box-shadow: 0 0 0 3px rgba(166,120,255,1), 0 0 95px rgba(166,120,255,.85), 0 14px 44px rgba(0,0,0,.55); }
+}
+
+/* windows are laid out in the desktop grid */
+
+/* ══════════ NOTE / LETTER ══════════ */
+.letter-date { color: var(--violet-2); margin-bottom: .6em; font-size: 1rem; }
+.thought-input {
+  width: 100%; resize: vertical;
+  font-family: var(--ui);
+  font-size: 1.05rem; line-height: 1.8; color: var(--ink);
+  background: rgba(247,240,255,.06);
+  border: 1px solid var(--glass-line); border-radius: 10px;
+  padding: .7em .9em; outline: none;
+}
+.thought-input::placeholder { color: rgba(217,178,255,.5); }
+.thought-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.18); }
+
+#saveThoughtBtn, #newPoemBtn, #keepPoemBtn {
+  font-family: var(--ui); margin-top: .8em;
+  font-size: .9rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .5em 1em;
+  background: linear-gradient(135deg, var(--violet), var(--deeppurple-2));
+  box-shadow: 0 4px 14px rgba(217,133,255,.35);
+  transition: transform .2s ease;
+}
+#saveThoughtBtn:hover, #newPoemBtn:hover, #keepPoemBtn:hover { transform: translateY(-2px); }
+.save-msg { margin-top: .6em; color: var(--gold); font-size: .95rem; }
+
+.collected-label {
+  margin: 1.2em 0 .4em; font-size: 1rem; color: var(--violet-2);
+}
+#collectedList { list-style: none; }
+#collectedList li {
+  font-size: .92rem; line-height: 1.6; color: var(--ink);
+  padding: .45em .6em; margin-bottom: .45em;
+  background: rgba(20,12,48,.4);
+  border-left: 2px solid var(--violet);
+  border-radius: 0 8px 8px 0;
+  display: flex; justify-content: space-between; gap: .6em; align-items: flex-start;
+}
+#collectedList li .del { cursor: pointer; color: var(--violet-2); font-size: .8rem; }
+#collectedList li .del:hover { color: var(--hotpink); }
+
+/* ══════════ POETRY ══════════ */
+.poem-text { font-family: var(--ui); font-size: 1.08rem; line-height: 1.9; color: var(--cornflower); min-height: 5em; }
+.poem-author {
+  margin-top: .8em; text-align: right;
+  font-size: .82rem; letter-spacing: .14em; color: var(--violet-2);
+  text-transform: uppercase;
+}
+.poem-actions { display: flex; gap: .7em; flex-wrap: wrap; }
+.poem-actions button { margin-top: .9em; }
+#keepPoemBtn { background: linear-gradient(135deg, var(--deeppurple-2), var(--violet)); }
+#keepPoemBtn.kept { background: linear-gradient(135deg, var(--cornflower), var(--violet)); }
+
+/* ══════════ THE INTRO CARD · how shall the web call you? ══════════ */
+#introCard {
+  position: relative; z-index: 5;
+  width: min(440px, 90vw);
+  padding: 2.2em 2em 1.8em;
+  border-radius: 22px;
+  border: 1px solid var(--glass-line);
+  background: rgba(20, 12, 48, .78);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 22px 70px rgba(0,0,0,.6), 0 0 60px rgba(166,120,255,.18);
+  text-align: center;
+  opacity: 0; transform: scale(.94) translateY(12px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+#introCard.show { opacity: 1; transform: none; }
+#introCard.bye { opacity: 0; transform: scale(.96); transition: opacity .35s ease, transform .35s ease; }
+.intro-title {
+  font-family: var(--fraktur); font-weight: normal;
+  font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.1;
+  color: var(--violet);
+  filter: drop-shadow(0 0 18px rgba(166,120,255,.5));
+}
+.intro-sub { margin-top: .6em; font-size: .95rem; line-height: 1.6; color: var(--faded-violet); }
+.intro-label { margin-top: 1.4em; font-size: .86rem; letter-spacing: .05em; color: var(--violet-2); }
+.intro-input {
+  display: block; width: 100%; margin-top: .8em;
+  font-size: 1.05rem; text-align: center; color: var(--ink);
+  background: rgba(247,240,255,.07);
+  border: 1px solid var(--glass-line); border-radius: 12px;
+  padding: .7em .9em; outline: none;
+  font-family: var(--cursive);
+}
+.intro-input::placeholder { color: rgba(217,178,255,.5); }
+.intro-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.2); }
+.intro-join {
+  margin-top: 1em; width: 100%;
+  font-family: var(--ui); font-size: 1rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .7em 1.4em;
+  background: linear-gradient(135deg, var(--violet), var(--deeppurple-2));
+  box-shadow: 0 6px 22px rgba(217,133,255,.4);
+  transition: transform .2s ease;
+}
+.intro-join:hover { transform: translateY(-2px); }
+.intro-back-name { font-family: var(--cursive); font-size: 1.3rem; color: var(--cornflower); }
+.intro-hint { margin-top: 1.1em; font-size: .76rem; line-height: 1.6; color: var(--faded-violet); }
+.intro-links { margin-top: 1.2em; display: flex; justify-content: center; gap: .8em; align-items: center; flex-wrap: wrap; }
+.intro-link {
+  font-family: var(--ui); font-size: .84rem; color: var(--cornflower); cursor: pointer;
+  background: none; border: none; border-bottom: 1px dotted var(--glass-line);
+  padding: .2em .1em;
+}
+.intro-link:hover { color: var(--violet-2); }
+.intro-dot { color: var(--faded-violet); opacity: .7; }
+
+/* ══════════ NOTIFY TEACUP · steam from the template ══════════ */
+.notify-btn {
+  position: absolute; right: .6em; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--glass-line);
+  background: rgba(20,12,48,.6);
+  color: var(--violet-2); cursor: pointer; line-height: 1;
+  display: grid; place-items: center;
+  transition: background .15s;
+}
+.notify-btn .teacup { width: 72%; height: 72%; display: block; transition: transform .2s; }
+.notify-btn:hover { background: rgba(60,20,100,.6); }
+.notify-btn:hover .teacup { transform: rotate(-6deg) scale(1.08); }
+.notify-btn .steam path {
+  fill: none; stroke: var(--violet-2); stroke-width: 2.2; stroke-linecap: round;
+  opacity: 0; animation: steamRise 2.6s ease-in-out infinite;
+}
+.notify-btn .steam .s1 { animation-delay: 0s; }
+.notify-btn .steam .s2 { animation-delay: 1.3s; }
+@keyframes steamRise {
+  0% { opacity: 0; transform: translateY(4px); }
+  30% { opacity: .7; }
+  100% { opacity: 0; transform: translateY(-9px); }
+}
+.notify-btn .cup { fill: #c9a6ff; stroke: #4a1270; stroke-width: 2; }
+.notify-btn .cup-handle { fill: none; stroke: #c9a6ff; stroke-width: 3.4; }
+.notify-btn .saucer { fill: #a678ff; stroke: #4a1270; stroke-width: 1.6; }
+.notify-btn.glow { animation: notifyPulse 2.2s ease-in-out infinite; }
+@keyframes notifyPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(217,133,255,.3); }
+  50% { box-shadow: 0 0 20px 5px rgba(217,133,255,.8); }
+}
+.notify-count {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 17px; height: 17px; padding: 0 3px; border-radius: 99px;
+  background: var(--deeppurple-2); color: #1a0430;
+  font-size: .68rem; font-weight: 700; line-height: 17px; text-align: center;
+}
+
+/* ══════════ THE WISH CLOUD · ask, and it will be given ══════════ */
+.wish-cloud {
+  position: fixed; top: -100px; left: -100px; z-index: 45;
+  width: 80px; height: 50px; padding: 0;
+  background: none; border: none; cursor: pointer;
+  filter: drop-shadow(0 0 10px rgba(166,120,255,.5));
+  animation: cloudBob 6s ease-in-out infinite;
+}
+.wish-cloud:hover { filter: drop-shadow(0 0 16px rgba(166,120,255,.75)); }
+.cloud-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.cloud-body { fill: rgba(166,120,255,.3); stroke: rgba(230,213,247,.75); stroke-width: 1.6; }
+.wish-cloud:hover .cloud-body { fill: rgba(138,43,226,.2); }
+.cloud-star { fill: #dbe7ff; animation: starTwinkle 2.4s ease-in-out infinite; }
+.cloud-star.s2 { animation-delay: .8s; }
+.cloud-star.s3 { animation-delay: 1.6s; }
+@keyframes starTwinkle { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+@keyframes cloudBob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.03); }
+}
+
+/* ══════════ THE MESSAGE CLOUD · bright news about your notes ══════════ */
+.msg-cloud {
+  position: fixed; top: -100px; left: -100px; z-index: 46;
+  width: 80px; height: 50px; padding: 0;
+  background: none; border: none; cursor: pointer;
+  filter: drop-shadow(0 0 8px rgba(149,179,236,.55));
+  animation: cloudBob 7s ease-in-out infinite reverse;
+}
+.msg-cloud:hover { filter: drop-shadow(0 0 16px rgba(169,196,240,.9)); }
+.msg-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.msg-body { fill: rgba(149,179,236,.4); stroke: rgba(219,231,255,.85); stroke-width: 1.6; }
+.msg-cloud:hover .msg-body { fill: rgba(169,196,240,.6); }
+.msg-star { fill: #dbe7ff; animation: starTwinkle 2.4s ease-in-out infinite; }
+.msg-star.s2 { animation-delay: 1.2s; }
+.msg-cloud.active .msg-body {
+  fill: rgba(169,196,240,.65);
+  animation: msgGlow 1.6s ease-in-out infinite;
+}
+@keyframes msgGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(166,120,255,.7)); }
+  50% { filter: drop-shadow(0 0 16px rgba(149,179,236,.95)); }
+}
+.msg-cloud.ping .msg-body { animation: msgPing .85s ease-out; }
+@keyframes msgPing {
+  0% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(166,120,255,.6)); }
+  40% { transform: scale(1.2) rotate(-4deg); filter: drop-shadow(0 0 26px rgba(149,179,236,1)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(166,120,255,.6)); }
+}
+.msg-count {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 17px; height: 17px; padding: 0 3px; border-radius: 99px;
+  background: #95b3ec; color: #1a0430;
+  font-size: .68rem; font-weight: 700; line-height: 17px; text-align: center;
+}
+.msg-cloud-bubble {
+  position: fixed; left: -100px; top: -100px; z-index: 47;
+  font-family: var(--ui); font-size: .72rem; letter-spacing: .03em;
+  color: #cfe0ff; background: rgba(13,6,20,.95);
+  border: 1.5px solid #95b3ec; padding: 5px 9px; white-space: nowrap;
+  opacity: 0; transform: translateY(4px); pointer-events: none;
+  transition: opacity .18s, transform .18s;
+}
+.msg-cloud-bubble.show { opacity: 1; transform: translateY(0); }
+
+/* ══════════ MESSAGE WALL ══════════ */
+@keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.wall-status { font-size: .78rem; color: var(--faded-violet); line-height: 1.5; }
+.wall-hint { font-size: .72rem; color: var(--gold); line-height: 1.5; margin: 2px 0 6px; opacity: .85; }
+.wall-inbox { margin: .5em 0; display: flex; flex-direction: column; gap: .4em; }
+.wall-note {
+  position: relative;
+  font-size: .85rem; line-height: 1.5;
+  background: rgba(26,11,46,.78);
+  border-left: 3px solid var(--violet-2);
+  padding: .5em .7em .55em .75em;
+  transform: rotate(var(--rrot, 0deg));
+  filter: drop-shadow(0 1px 2px rgba(15,10,30,.2)) drop-shadow(0 5px 9px rgba(30,20,60,.14));
+  clip-path: polygon(0% 4%, 4% 0%, 9% 5%, 14% 0%, 19% 5%, 25% 0%, 30% 5%, 36% 0%, 42% 5%, 48% 0%, 54% 5%, 60% 0%, 66% 5%, 72% 0%, 78% 5%, 84% 0%, 90% 5%, 96% 0%, 100% 4%, 100% 96%, 96% 100%, 91% 95%, 86% 100%, 81% 95%, 75% 100%, 69% 95%, 63% 100%, 57% 95%, 51% 100%, 45% 95%, 39% 100%, 33% 95%, 27% 100%, 21% 95%, 15% 100%, 9% 95%, 4% 100%, 0% 96%);
+  animation: msgIn .3s ease;
+}
+.wall-note .who { color: var(--cornflower); font-weight: 700; }
+.wall-note .txt { color: var(--ink); word-break: break-word; }
+.wall-note .to { font-size: .72em; color: var(--violet-2); }
+.wall-note.mine-inbox { border-left-color: var(--cornflower); }
+.wall-note.mine-inbox .who { color: var(--cornflower); }
+.wall-compose { display: flex; gap: .4em; margin: .6em 0; }
+.wall-to, .wall-input, .qa-input {
+  background: rgba(247,240,255,.06);
+  border: 1px solid var(--glass-line); border-radius: 8px;
+  color: var(--ink); padding: .45em .6em;
+  font-family: var(--ui); font-size: .88rem; outline: none; min-width: 0;
+}
+.wall-to:focus, .wall-input:focus, .qa-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.18); }
+.wall-to { flex: 0 0 96px; }
+.wall-input { flex: 1 1 auto; }
+#wallSend { font-family: var(--ui); font-size: .88rem; color: #1a0430; cursor: pointer; border: none; border-radius: 99px; padding: .45em .9em; white-space: nowrap; background: linear-gradient(135deg, var(--violet), var(--deeppurple-2)); box-shadow: 0 4px 14px rgba(217,133,255,.35); transition: transform .2s ease; }
+#wallSend:hover { transform: translateY(-2px); }
+.wall-list { display: flex; flex-direction: column; gap: .4em; margin-top: .2em; }
+.wall-list .wall-note { border-left-color: var(--violet-2); }
+
+/* ══════════ WISHES & DREAMS ══════════ */
+.wish-scripture {
+  font-size: 1rem; line-height: 1.6; color: var(--violet-2);
+  border-left: 2px dashed rgba(217,0,255,.5); padding-left: 12px; margin: 0 0 10px;
+}
+.wish-status { font-size: .78rem; color: var(--faded-violet); line-height: 1.5; }
+.wish-compose { display: flex; gap: .4em; margin: .6em 0; }
+.wish-input {
+  flex: 1 1 auto; min-width: 0; background: rgba(247,240,255,.06);
+  border: 1px solid var(--glass-line); border-radius: 8px; color: var(--ink);
+  padding: .45em .6em; font-family: var(--ui); font-size: .88rem; outline: none;
+}
+.wish-input:focus { border-color: var(--violet-2); box-shadow: 0 0 0 3px rgba(166,120,255,.18); }
+#wishSend {
+  font-family: var(--ui); font-size: .88rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .45em .9em; white-space: nowrap;
+  background: linear-gradient(135deg, var(--violet), var(--deeppurple-2));
+  box-shadow: 0 4px 14px rgba(217,133,255,.35);
+  transition: transform .2s ease;
+}
+#wishSend:hover { transform: translateY(-2px); }
+.wish-list { display: flex; flex-direction: column; gap: .4em; max-height: 230px; overflow-y: auto; }
+.wish-note {
+  position: relative; font-size: .85rem; line-height: 1.5;
+  background: rgba(26,11,46,.78); border-left: 3px solid var(--violet-2);
+  padding: .5em .7em .5em .75em;
+  transform: rotate(var(--rrot, 0deg));
+  filter: drop-shadow(0 1px 2px rgba(15,10,30,.2)) drop-shadow(0 5px 9px rgba(30,20,60,.14));
+  clip-path: polygon(0% 4%, 4% 0%, 9% 5%, 14% 0%, 19% 5%, 25% 0%, 30% 5%, 36% 0%, 42% 5%, 48% 0%, 54% 5%, 60% 0%, 66% 5%, 72% 0%, 78% 5%, 84% 0%, 90% 5%, 96% 0%, 100% 4%, 100% 96%, 96% 100%, 91% 95%, 86% 100%, 81% 95%, 75% 100%, 69% 95%, 63% 100%, 57% 95%, 51% 100%, 45% 95%, 39% 100%, 33% 95%, 27% 100%, 21% 95%, 15% 100%, 9% 95%, 4% 100%, 0% 96%);
+  animation: msgIn .3s ease;
+}
+.wish-note .who { color: var(--violet-2); font-weight: 700; }
+.wish-note .txt { color: var(--ink); word-break: break-word; }
+.wish-note .when { display: block; font-size: .68rem; color: var(--faded-violet); margin-top: 2px; }
+
+/* ══════════ THE BULLETIN BOARD · everything new lands here ══════════ */
+.bulletin-intro { font-size: .82rem; color: var(--faded-violet); line-height: 1.5; margin-bottom: .3em; }
+.bulletin-feed {
+  display: flex; flex-direction: column; gap: .45em;
+  max-height: 300px; overflow-y: auto; margin: .5em 0;
+}
+.bulletin-post {
+  position: relative; font-size: .85rem; line-height: 1.5;
+  background: rgba(26,11,46,.78);
+  border-left: 3px solid var(--violet);
+  padding: .5em .7em .55em .75em;
+  transform: rotate(var(--rrot, 0deg));
+  filter: drop-shadow(0 1px 2px rgba(15,10,30,.2)) drop-shadow(0 5px 9px rgba(30,20,60,.14));
+  clip-path: polygon(0% 4%, 4% 0%, 9% 5%, 14% 0%, 19% 5%, 25% 0%, 30% 5%, 36% 0%, 42% 5%, 48% 0%, 54% 5%, 60% 0%, 66% 5%, 72% 0%, 78% 5%, 84% 0%, 90% 5%, 96% 0%, 100% 4%, 100% 96%, 96% 100%, 91% 95%, 86% 100%, 81% 95%, 75% 100%, 69% 95%, 63% 100%, 57% 95%, 51% 100%, 45% 95%, 39% 100%, 33% 95%, 27% 100%, 21% 95%, 15% 100%, 9% 95%, 4% 100%, 0% 96%);
+  animation: msgIn .3s ease;
+}
+.bulletin-post .who { color: var(--cornflower); font-weight: 700; }
+.bulletin-post .txt { color: var(--ink); word-break: break-word; }
+.bulletin-post .meta { display: block; font-size: .68rem; color: var(--faded-violet); margin-top: 2px; }
+.bulletin-post.new { border-left-color: var(--cornflower); animation: bulletinFlash 1.6s ease; }
+@keyframes bulletinFlash {
+  0% { background: rgba(80,55,150,.9); filter: drop-shadow(0 0 10px rgba(149,179,236,.6)); }
+  100% { background: rgba(26,11,46,.78); filter: drop-shadow(0 1px 2px rgba(15,10,30,.2)); }
+}
+.bulletin-note { font-size: .78rem; color: var(--faded-violet); line-height: 1.5; margin: .4em 0; }
+#bulletinWallBtn {
+  font-family: var(--ui); font-size: .86rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .5em 1em;
+  background: linear-gradient(135deg, var(--violet), var(--deeppurple-2));
+  box-shadow: 0 4px 14px rgba(217,133,255,.35);
+  transition: transform .2s ease;
+}
+#bulletinWallBtn:hover { transform: translateY(-2px); }
+.housekeeping { margin-top: .8em; padding-top: .7em; border-top: 1px dashed rgba(217,0,255,.3); }
+.housekeeping .checkin-box { display: flex; align-items: center; gap: .6em; flex-wrap: wrap; margin-bottom: .3em; }
+#checkinBtn, #remindBtn {
+  font-family: var(--ui); font-size: .86rem; color: #1a0430; cursor: pointer;
+  border: none; border-radius: 99px; padding: .5em 1em;
+  background: linear-gradient(135deg, var(--violet), var(--deeppurple-2));
+  box-shadow: 0 4px 14px rgba(217,133,255,.35);
+  transition: transform .2s ease;
+}
+#checkinBtn:hover, #remindBtn:hover { transform: translateY(-2px); }
+#checkinBtn.checked { background: linear-gradient(135deg, var(--cornflower), var(--violet)); }
+.checkin-info { font-size: .82rem; color: var(--faded-violet); }
+.streak { font-size: .82rem; color: var(--gold); margin-bottom: .5em; }
+.reminder-box { display: flex; align-items: center; gap: .5em; flex-wrap: wrap; margin-bottom: .8em; }
+.reminder-label { font-size: .82rem; color: var(--violet-2); letter-spacing: .06em; margin: .5em 0 .3em; flex-basis: 100%; }
+#remindTime { background: rgba(247,240,255,.06); border: 1px solid var(--glass-line); border-radius: 8px; color: var(--ink); padding: .4em .5em; font-family: var(--ui); font-size: .88rem; outline: none; }
+#remindBtn.on { background: linear-gradient(135deg, var(--deeppurple-2), var(--violet)); }
+.remind-info { font-size: .8rem; color: var(--faded-violet); }
+
+/* ══════════ GALLERY + COLOR REVEAL ══════════ */
+.gallery {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1em;
+}
+.photo-frame {
+  border-radius: 12px; overflow: visible;
+  border: 1px solid var(--glass-line);
+  background: var(--faded-purple);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.photo-frame:hover { transform: translateY(-4px); box-shadow: 0 12px 34px rgba(217,133,255,.3); }
+
+/* the reveal: the image sleeps in monochrome, hover wakes its true colors */
+.photo-frame .img-wrap { position: relative; overflow: hidden; }
+.photo-frame img {
+  display: block; width: 100%; aspect-ratio: 1/1; object-fit: cover;
+  filter: grayscale(1) contrast(1.05) brightness(.97) sepia(.15);
+  transition: filter 1s ease, transform 1.4s ease;
+}
+.photo-frame:hover img {
+  filter: grayscale(0) contrast(1) brightness(1) sepia(0);
+  transform: scale(1.06);
+}
+/* a violet sheen that sweeps across while the color comes back */
+.photo-frame .img-wrap::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(217,133,255,.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform .9s ease;
+  mix-blend-mode: screen;
+}
+.photo-frame:hover .img-wrap::after { transform: translateX(120%); }
+
+.photo-frame figcaption {
+  padding: .7em .8em .8em;
+  display: flex; flex-direction: column; gap: .2em;
+}
+.cap-title {
+  font-size: .95rem; font-weight: 700; color: var(--light-violet);
+  letter-spacing: .02em;
+}
+.cap-sub { font-size: .82rem; line-height: 1.5; color: var(--faded-violet); }
+.links { margin-top: .5em; display: flex; gap: .5em; flex-wrap: wrap; }
+.links a {
+  font-size: .78rem; color: var(--violet); text-decoration: none;
+  border: 1px solid rgba(166,120,255,.5);
+  border-radius: 99px; padding: .28em .7em;
+  transition: background .2s ease, color .2s ease;
+}
+.links a:hover { background: var(--deeppurple-2); color: #1a0430; }
+
+/* ══════════ FOOTER ══════════ */
+footer {
+  position: absolute; bottom: 12px; width: 100%; text-align: center; z-index: 5;
+  font-size: .85rem; color: var(--faded-violet); opacity: .8;
+  pointer-events: none;
+}
+
+/* ══════════ LORE MODAL ══════════ */
+#loreModal {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(8,6,24,.66);
+  backdrop-filter: blur(4px);
+}
+#loreModal[hidden] { display: none; }
+.lore-card {
+  position: relative;
+  width: min(560px, 90vw); max-height: 78vh; overflow-y: auto;
+  padding: 2em 2.2em 2.4em;
+  border-radius: 18px;
+  border: 1px solid var(--glass-line);
+  background:
+    linear-gradient(165deg, rgba(92,26,138,.88), rgba(14,18,48,.92));
+  box-shadow: 0 22px 70px rgba(0,0,0,.6), 0 0 60px rgba(166,120,255,.18);
+  animation: pop .45s ease;
+}
+.lore-card.spot {
+  box-shadow: 0 0 0 3px rgba(166,120,255,.85), 0 0 80px rgba(138,43,226,.7), 0 22px 70px rgba(0,0,0,.6);
+  animation: pop .45s ease, spotPulse 1.1s ease-in-out 2;
+}
+@keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+.lore-close {
+  position: absolute; top: 12px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--glass-line); cursor: pointer;
+  color: var(--light-violet); background: rgba(20,12,48,.6);
+}
+.lore-close:hover { background: var(--deeppurple-2); color: #1a0430; }
+.lore-title {
+  font-family: var(--fraktur); font-weight: normal;
+  font-size: 2rem; margin-bottom: .6em;
+  background: linear-gradient(90deg, var(--cornflower), var(--violet));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.lore-text { font-family: var(--ui); font-size: 1.06rem; line-height: 2.05; color: var(--ink); }
+.lore-sign { margin-top: 1.2em; text-align: right; font-size: .95rem; color: var(--violet-2); }
+
+/* ══════════ RESPONSIVE ══════════ */
+/* narrow desktop panes: keep draggable, but don't let windows fall off screen */
+/* ══════════ WASHI TAPE · the scrapbook colour aesthetic ══════════ */
+.tape, .window::before, .intro-card::before, .photo-frame::before {
+  content: "";
+  position: absolute; top: -13px; left: 50%; margin-left: -46px;
+  width: 108px; height: 30px; z-index: 7;
+  background: linear-gradient(180deg, rgba(230,220,250,.32) 0%, rgba(166,120,255,.7) 45%, rgba(106,28,184,.55) 100%);
+  border-left: 1px dashed rgba(230,220,250,.8);
+  border-right: 1px dashed rgba(230,220,250,.8);
+  box-shadow: 0 2px 6px rgba(0,0,0,.4), inset 0 1px 0 rgba(230,213,247,.25);
+  clip-path: polygon(0% 2%, 6% 6%, 12% 1%, 19% 6%, 25% 1%, 31% 6%, 37% 1%, 44% 6%, 50% 1%, 56% 6%, 62% 1%, 69% 6%, 75% 1%, 81% 6%, 87% 1%, 94% 6%, 100% 2%, 100% 30%, 96% 40%, 100% 55%, 96% 65%, 100% 80%, 100% 98%, 94% 94%, 87% 99%, 81% 94%, 75% 99%, 69% 94%, 62% 99%, 56% 94%, 50% 99%, 44% 94%, 37% 99%, 31% 94%, 25% 99%, 19% 94%, 12% 99%, 6% 94%, 0% 98%, 0% 80%, 4% 65%, 0% 55%, 4% 40%, 0% 30%);
+  opacity: .95;
+  transform: rotate(-4deg);
+  pointer-events: none;
+}
+.photo-frame::before { top: -11px; transform: rotate(-3deg); }
+
+/* ══════════ THE RECORD DRAWER · a hidden music drawer ══════════ */
+#musicTab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 70;
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 2px solid var(--violet); background: rgba(26,11,46,.92);
+  color: var(--violet-2); font-size: 1.25rem; cursor: pointer;
+  display: grid; place-items: center; line-height: 1;
+  box-shadow: 0 6px 18px rgba(0,0,0,.5);
+  transition: transform .2s ease, background .2s ease, color .2s ease;
+}
+#musicTab:hover { transform: rotate(-6deg) scale(1.06); background: var(--deeppurple-2); color: #1a0430; }
+#musicDrawer {
+  position: fixed; right: 18px; bottom: 74px; z-index: 69;
+  width: min(340px, 92vw);
+  max-height: 0; overflow: hidden; opacity: 0; pointer-events: none;
+  border-radius: 16px; border: 1px solid var(--violet);
+  background: rgba(18,10,40,.95); backdrop-filter: blur(10px);
+  box-shadow: 0 18px 50px rgba(0,0,0,.55);
+  transition: max-height .5s ease, opacity .4s ease;
+}
+#musicDrawer.open { max-height: 480px; opacity: 1; pointer-events: auto; }
+.music-panel { position: relative; padding: 40px 20px 20px; }
+.music-panel > .tape { top: 0; left: 50%; margin-left: -46px; transform: rotate(-4deg); }
+.music-title { font-family: var(--fraktur); font-weight: normal; color: var(--violet-2); font-size: 1.35rem; margin: 0 0 2px; }
+.music-sub { font-size: .7rem; color: var(--faded-violet); letter-spacing: .12em; margin: 0 0 12px; }
+#songList { display: flex; flex-direction: column; }
+.song {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 6px; border-bottom: 1px dashed rgba(217,0,255,.25);
+}
+.song:last-child { border-bottom: none; }
+.song-num { color: var(--faded-violet); font-size: .72rem; min-width: 20px; }
+.song-title { flex: 1; font-size: .93rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-btn {
+  font-family: var(--ui); font-size: .78rem;
+  background: rgba(26,11,46,.9); color: var(--violet);
+  border: 1.5px solid var(--violet); border-radius: 99px;
+  padding: 5px 12px; cursor: pointer; transition: .15s; min-width: 48px;
+}
+.song-btn:hover { background: var(--deeppurple-2); color: #1a0430; }
+.song.playing { background: rgba(138,43,226,.22); border-left: 3px solid var(--violet); }
+.now-playing { margin-top: 13px; font-size: .87rem; color: var(--violet-2); min-height: 1.2em; letter-spacing: .05em; }
+.drawer-close {
+  position: absolute; top: 10px; right: 12px; width: 28px; height: 28px; border-radius: 50%;
+  background: none; border: 1.5px solid rgba(217,0,255,.5); color: var(--faded-violet);
+  font-size: .85rem; line-height: 1; cursor: pointer; transition: .15s; z-index: 2;
+}
+.drawer-close:hover { color: var(--violet); border-color: var(--violet); transform: rotate(90deg); }
+
+/* ══════════ THE CORNER WEB · Charlotte keeps watch ══════════ */
+.webzone {
+  position: fixed; top: 8px; right: 8px; width: 150px; height: 150px; z-index: 60;
+  cursor: pointer; transition: filter .2s;
+}
+.webzone:hover { filter: brightness(1.18) drop-shadow(0 0 8px rgba(166,120,255,.4)); }
+.web-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  filter: drop-shadow(0 0 5px rgba(217,0,255,.55));
+  animation: webPulse 3.6s ease-in-out infinite;
+}
+@keyframes webPulse {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(217,0,255,.45)); opacity: .92; }
+  50% { filter: drop-shadow(0 0 9px rgba(166,120,255,.9)); opacity: 1; }
+}
+.spider {
+  position: absolute; left: calc(50% - 20px); top: calc(50% - 20px);
+  width: 40px; height: 40px; z-index: 2;
+}
+.spider.sick {
+  transform: rotate(180deg) translateY(5px);
+  filter: grayscale(.35) brightness(.85);
+}
+.spider-sweat {
+  position: absolute; left: calc(50% + 20px); top: calc(50% - 27px);
+  font-size: 13px; line-height: 1; z-index: 3; pointer-events: none;
+  opacity: 0; transition: opacity .3s;
+}
+.spider.sick + .spider-sweat { opacity: .95; animation: sweatFall 2.2s ease-in-out infinite; }
+@keyframes sweatFall {
+  0%, 100% { transform: translateY(0); opacity: .95; }
+  50% { transform: translateY(5px); opacity: .6; }
+}
+.spider.chomping { animation: spiderChomp .3s linear 3; }
+@keyframes spiderChomp {
+  0% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(2px) rotate(-9deg); }
+  50% { transform: translateY(-1px) rotate(9deg); }
+  75% { transform: translateY(3px) rotate(-6deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+.nom-bubble {
+  position: fixed; right: 164px; top: 130px; z-index: 62;
+  font-family: var(--ui); font-size: .82rem; letter-spacing: .04em;
+  color: var(--violet-2); background: rgba(26,11,46,.95);
+  border: 2px solid var(--violet); padding: 9px 13px;
+  opacity: 0; transform: translateY(4px);
+  pointer-events: none; transition: opacity .18s, transform .18s;
+}
+.nom-bubble.show { opacity: 1; transform: translateY(0); }
+.nom-bubble::before, .nom-bubble::after {
+  content: ""; position: absolute; left: 100%; top: 50%;
+  border: 7px solid transparent; margin-top: -7px;
+}
+.nom-bubble::before { border-left-color: var(--violet); }
+.nom-bubble::after { border-left-color: rgba(26,11,46,.95); left: calc(100% - 4px); }
+
+/* ══════════ THE BUG WIELDER · a firefly snack for the spider ══════════ */
+.cursor-bug {
+  position: fixed; left: 0; top: 0; width: 34px; height: 34px;
+  z-index: 5002; pointer-events: none; will-change: transform;
+}
+.cursor-bug svg { width: 100%; height: 100%; display: block; }
+.bug-glow { fill: rgba(255,217,138,.38); animation: bugPulse 1.3s ease-in-out infinite; }
+.bug-wing { fill: rgba(217,133,255,.35); }
+.bug-antenna { fill: none; stroke: #c9a6ff; stroke-width: 1.6; }
+@keyframes bugPulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+.cursor-bug.fed { opacity: 0; transition: opacity .55s; }
+.sparkle {
+  position: fixed; width: 6px; height: 6px; border-radius: 50%;
+  z-index: 5003; pointer-events: none;
+  animation: sparkleFly .85s ease-out forwards;
+}
+@keyframes sparkleFly {
+  to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; }
+}
+
+/* ══════════ SECRET NOTES · from Hans, Star, Chari, Milo & Miki ══════════ */
+.wish-cloud, .msg-cloud { touch-action: none; }
+.wish-cloud.dragging, .msg-cloud.dragging { animation: none; cursor: grabbing; }
+.secret-note {
+  position: fixed; left: 50%; top: 70px; z-index: 55;
+  width: min(360px, 92vw);
+  transform: translateX(-50%) rotate(-1.2deg);
+  background: linear-gradient(165deg, rgba(40,22,84,.97), rgba(16,10,38,.97));
+  border: 1px solid var(--glass-line);
+  border-left: 3px solid var(--secret-accent, var(--cornflower));
+  border-radius: 12px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 34px rgba(149,179,236,.18);
+  padding: 34px 24px 20px;
+  font-family: var(--ui);
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease;
+}
+.secret-note.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) rotate(-.6deg); }
+.secret-close {
+  position: absolute; top: 10px; right: 12px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: none; border: 1px solid var(--glass-line); color: var(--violet-2);
+  font-size: .8rem; line-height: 1; cursor: pointer; transition: .15s;
+}
+.secret-close:hover { color: #1a0430; background: var(--deeppurple-2); border-color: var(--deeppurple-2); }
+.secret-label {
+  font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--violet-2); margin-bottom: .5em;
+}
+.secret-text { font-size: .98rem; line-height: 1.75; color: var(--ink); }
+.secret-sign { margin-top: .8em; text-align: right; font-family: var(--cursive); font-size: 1.1rem; }
+
+@media (max-width: 1080px) and (min-width: 641px) {
+  #desktop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* true small screens: one column, everything stacks */
+@media (max-width: 640px) {
+  #desktop { grid-template-columns: 1fr; padding: 0 4vw 4vh; }
+  #menu { grid-column: 1 / -1; }
+  .win-body { max-height: none; }
+  .webzone { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- ══════════ LOADING SCREEN · the spider spins the violet web ══════════ -->
+  <div id="loader">
+    <canvas id="webCanvas"></canvas>
+
+    <!-- the front door: how shall the web call you? -->
+    <div id="introCard" class="intro-card">
+      <h2 class="intro-title">The Violet Web Café</h2>
+      <p class="intro-sub cursive">a crooked little house at the seam of inkblue &amp; deeppurple, where chimeras pour the night</p>
+      <div id="introJoin">
+        <label class="intro-label" for="introName">how would you like the web to call you?</label>
+        <input id="introName" class="intro-input" placeholder="your name" maxlength="20" autocomplete="off">
+        <button id="introJoinBtn" class="intro-join">join the community ⟡</button>
+        <p class="intro-hint">the web remembers your name on this device — type it again on a new one to come back as yourself.</p>
+      </div>
+      <div id="introBack" hidden>
+        <p class="intro-label">welcome back,</p>
+        <p class="intro-back-name" id="introBackName"></p>
+        <button id="introEnterBtn" class="intro-join">enter the café ⟡</button>
+        <p class="intro-hint">your messages are waiting for you by the fire.</p>
+      </div>
+      <div class="intro-links">
+        <button id="introGuestBtn" class="intro-link">just browsing</button>
+        <span class="intro-dot">·</span>
+        <button id="introSwitchBtn" class="intro-link" hidden>not you? switch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ THE DESKTOP ══════════ -->
+  <div id="desktop">
+
+    <canvas id="motesCanvas" aria-hidden="true"></canvas>
+
+    <header id="header">
+      <h1 class="site-title">The Violet Web Café</h1>
+      <p class="site-subtitle cursive">a little crooked house at the seam of inkblue &amp; deeppurple, where chimeras pour the night and keep the thoughts of dreamers</p>
+      <div class="desk-buttons">
+        <button class="desk-btn" data-win="noteWin">✎ Kind Notes</button>
+        <button class="desk-btn" data-win="poemWin">❦ Poetry</button>
+        <button class="desk-btn" data-win="galleryWin">◈ Gallery</button>
+        <button class="desk-btn" data-win="wallWin">✉ Message Wall</button>
+        <button class="desk-btn" data-win="bulletinWin">☉ Bulletin Board</button>
+        <button class="desk-btn" data-win="wishWin">☁ Wishes</button>
+      </div>
+    </header>
+
+    <!-- movable lore menu -->
+    <nav id="menu" aria-label="Lore menu">
+      <div class="menu-handle">☽ the archive</div>
+      <div class="menu-items">
+        <button class="menu-item" data-q="who">Who</button>
+        <button class="menu-item" data-q="what">What</button>
+        <button class="menu-item" data-q="when">When</button>
+        <button class="menu-item" data-q="why">Why</button>
+        <button class="menu-item" data-q="where">Where</button>
+      </div>
+      <button id="notifyBtn" class="notify-btn" title="no new messages">
+        <svg class="teacup" viewBox="0 0 64 64" aria-hidden="true">
+          <g class="steam">
+            <path class="s1" d="M25 25 Q27 19 25 15 Q23 11 26 7"></path>
+            <path class="s2" d="M33 25 Q31 19 33 15 Q35 11 32 7"></path>
+          </g>
+          <path class="cup" d="M14 28 h26 v9 a13 13 0 0 1 -26 0 z"></path>
+          <path class="cup-handle" d="M40 30 h5 a6 6 0 0 1 0 12 h-3"></path>
+          <rect class="saucer" x="9" y="47" width="36" height="4" rx="2"></rect>
+        </svg>
+        <span id="notifyCount" class="notify-count" hidden></span>
+      </button>
+    </nav>
+
+    <!-- the little clouds hover above their own windows: wishes over Wishes, messages over the Wall -->
+    <button id="wishCloud" class="wish-cloud" title="Wishes &amp; Dreams — ask, and it will be given">
+      <svg class="cloud-svg" viewBox="0 0 72 44" aria-hidden="true">
+        <path class="cloud-body" d="M16 34 a10 10 0 0 1 1.6 -19.8 A13 13 0 0 1 42 13.4 a9 9 0 0 1 11.5 11.9 A8.5 8.5 0 0 1 56 34 z"></path>
+        <path class="cloud-star s1" d="M18 16 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 z"></path>
+        <path class="cloud-star s2" d="M49 8 l1 2.2 2.2 1 -2.2 1 -1 2.2 -1 -2.2 -2.2 -1 2.2 -1 z"></path>
+        <path class="cloud-star s3" d="M56 22 l.9 1.9 1.9 .9 -1.9 .9 -.9 1.9 -.9 -1.9 -1.9 -.9 1.9 -.9 z"></path>
+      </svg>
+    </button>
+    <button id="msgCloud" class="msg-cloud" title="your messages — click to open the Message Wall">
+      <svg class="msg-svg" viewBox="0 0 72 44" aria-hidden="true">
+        <path class="msg-body" d="M16 34 a10 10 0 0 1 1.6 -19.8 A13 13 0 0 1 42 13.4 a9 9 0 0 1 11.5 11.9 A8.5 8.5 0 0 1 56 34 z"></path>
+        <path class="msg-star s1" d="M24 16 l1.3 2.7 2.7 1.3 -2.7 1.3 -1.3 2.7 -1.3 -2.7 -2.7 -1.3 2.7 -1.3 z"></path>
+        <path class="msg-star s2" d="M46 12 l1 2.2 2.2 1 -2.2 1 -1 2.2 -1 -2.2 -2.2 -1 2.2 -1 z"></path>
+      </svg>
+      <span id="msgCount" class="msg-count" hidden></span>
+    </button>
+    <div id="msgCloudBubble" class="msg-cloud-bubble" aria-hidden="true"></div>
+
+    <!-- daily note / letter -->
+    <section class="window" id="noteWin" data-title="Kind Notes">
+      <div class="win-head">
+        <div class="win-title-wrap">
+          <span class="win-title">Kind Notes</span>
+          <span class="win-sub">the letter home</span>
+        </div>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body letter">
+        <p class="letter-date" id="todayEl"></p>
+        <textarea id="thoughtInput" class="thought-input" rows="5" placeholder="Dear café, today I thought…"></textarea>
+        <button id="saveThoughtBtn">✎ pin this thought</button>
+        <p id="saveMsg" class="save-msg" hidden>pinned to the web ✦</p>
+        <div id="collectedCtn">
+          <p class="collected-label">thoughts &amp; poems kept here</p>
+          <ul id="collectedList"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- poetry of the night -->
+    <section class="window" id="poemWin" data-title="Poetry">
+      <div class="win-head">
+        <div class="win-title-wrap">
+          <span class="win-title">Poetry</span>
+          <span class="win-sub">poetry of the night</span>
+        </div>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body poem">
+        <p class="poem-text" id="poemText"></p>
+        <p class="poem-author" id="poemAuthor"></p>
+        <div class="poem-actions">
+          <button id="newPoemBtn">❦ another</button>
+          <button id="keepPoemBtn">♥ keep this one</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- gallery -->
+    <section class="window" id="galleryWin" data-title="Gallery">
+      <div class="win-head">
+        <div class="win-title-wrap">
+          <span class="win-title">Gallery</span>
+          <span class="win-sub">sights of the etherrealm</span>
+        </div>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body">
+        <div class="gallery">
+          <figure class="photo-frame" data-index="0">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-exterior/640/480" alt="The café floating in the violet etherrealm">
+            </div>
+            <figcaption>
+              <span class="cap-title">The Café, from the Far Side of the Web</span>
+              <span class="cap-sub cursive">where the moths steer by your heartbeat</span>
+              <span class="links">
+                <a href="https://www.poetryfoundation.org" target="_blank" rel="noopener">Poetry Foundation ↗</a>
+                <a href="https://en.wikipedia.org/wiki/Chimera_(mythology)" target="_blank" rel="noopener">the chimera ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="1">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-barista/640/480" alt="A chimera barista pouring tea">
+            </div>
+            <figcaption>
+              <span class="cap-title">Auren Pours the Night</span>
+              <span class="cap-sub cursive">lion, eagle, serpent — and one very steady paw</span>
+              <span class="links">
+                <a href="https://en.wikipedia.org/wiki/Romantic_poetry" target="_blank" rel="noopener">the romantics ↗</a>
+                <a href="https://www.britannica.com/art/English-literature/The-Romantic-period" target="_blank" rel="noopener">the romantic period ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="2">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-interior/640/480" alt="The café interior with floating teacups">
+            </div>
+            <figcaption>
+              <span class="cap-title">The Reading Room</span>
+              <span class="cap-sub cursive">teacups drift; nobody rushes; the harp plays itself</span>
+              <span class="links">
+                <a href="https://www.gutenberg.org/" target="_blank" rel="noopener">gutenberg ↗</a>
+                <a href="https://poets.org/" target="_blank" rel="noopener">poets.org ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="3">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-wingedfox/640/480" alt="A winged fox writing a letter">
+            </div>
+            <figcaption>
+              <span class="cap-title">Veyla Keeps a Letter</span>
+              <span class="cap-sub cursive">silver-winged fox, chronicler of leftover thoughts</span>
+              <span class="links">
+                <a href="https://www.poetryfoundation.org/poems/browse" target="_blank" rel="noopener">poems to read ↗</a>
+                <a href="https://archive.org/" target="_blank" rel="noopener">archive ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+
+          <figure class="photo-frame" data-index="4">
+            <div class="img-wrap">
+              <img src="https://picsum.photos/seed/violet-cafe-mooncake/640/480" alt="Mooncake and violet tea on a floating table">
+            </div>
+            <figcaption>
+              <span class="cap-title">Tea &amp; Mooncake, Unclaimed</span>
+              <span class="cap-sub cursive">a setting left for someone who has not arrived yet</span>
+              <span class="links">
+                <a href="https://en.wikipedia.org/wiki/Romanticism" target="_blank" rel="noopener">romanticism ↗</a>
+                <a href="https://www.poetryfoundation.org/poets" target="_blank" rel="noopener">the poets ↗</a>
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- the message wall -->
+    <section class="window" id="wallWin" data-title="Message Wall">
+      <div class="win-head">
+        <div class="win-title-wrap">
+          <span class="win-title">Message Wall</span>
+          <span class="win-sub">notes &amp; whispers, pinned</span>
+        </div>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body wall">
+        <p class="wall-status" id="wallStatus"></p>
+        <p class="wall-hint">notes for “anyone” hang on the public wall below · notes for your name wait in your inbox up top</p>
+        <div id="wallInbox" class="wall-inbox"></div>
+        <div class="wall-compose">
+          <input id="wallTo" class="wall-to" placeholder="for: anyone" maxlength="20">
+          <input id="wallInput" class="wall-input" placeholder="pin a note for a member by name…" maxlength="300">
+          <button id="wallSend">✉ pin</button>
+        </div>
+        <div id="wallList" class="wall-list"></div>
+      </div>
+    </section>
+
+    <!-- the bulletin board: everything new lands here first -->
+    <section class="window" id="bulletinWin" data-title="Bulletin Board">
+      <div class="win-head">
+        <div class="win-title-wrap">
+          <span class="win-title">Bulletin Board</span>
+          <span class="win-sub">everything new lands here first</span>
+        </div>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body bulletin">
+        <p class="bulletin-intro">everything new lands here first — notes pinned on the wall, fresh from the web.</p>
+        <div id="bulletinFeed" class="bulletin-feed"></div>
+        <p class="bulletin-note">notes for your name also light the cloud and the teacup up top — your inbox waits at the top of the Wall.</p>
+        <button id="bulletinWallBtn">✉ go to the wall</button>
+        <div class="housekeeping">
+          <div class="checkin-box">
+            <button id="checkinBtn">🕸 I'm here today</button>
+            <span id="checkinInfo" class="checkin-info"></span>
+          </div>
+          <p id="streakEl" class="streak"></p>
+          <div class="reminder-box">
+            <p class="reminder-label">🔔 the daily bell</p>
+            <input type="time" id="remindTime" value="20:00">
+            <button id="remindBtn">ring the bell</button>
+            <span id="remindInfo" class="remind-info"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- wishes & dreams -->
+    <section class="window" id="wishWin" data-title="Wishes">
+      <div class="win-head">
+        <div class="win-title-wrap">
+          <span class="win-title">Wishes</span>
+          <span class="win-sub">wishes &amp; dreams</span>
+        </div>
+        <span class="win-tools"><button class="minimize" title="fold away">–</button></span>
+      </div>
+      <div class="win-body wish">
+        <p class="wish-scripture cursive">ask, and it shall be given you — seek, and ye shall find</p>
+        <p class="wish-status" id="wishStatus"></p>
+        <div class="wish-compose">
+          <input id="wishInput" class="wish-input" placeholder="cast a wish into the web…" maxlength="200">
+          <button id="wishSend">☁️ cast</button>
+        </div>
+        <div id="wishList" class="wish-list"></div>
+      </div>
+    </section>
+
+    <footer class="cursive">the web remembers everything you forget to keep · ✦</footer>
+  </div>
+
+  <!-- ══════════ THE CORNER WEB · Charlotte keeps watch ══════════ -->
+  <div id="cornerWeb" class="webzone" title="Charlotte, who mends the web">
+    <svg class="web-svg" viewBox="0 0 150 150" aria-hidden="true">
+      <g stroke="rgba(217,0,255,.5)" stroke-width="1" fill="none">
+        <line x1="75" y1="2" x2="75" y2="148"></line>
+        <line x1="75" y1="2" x2="75" y2="60"></line>
+        <line x1="2" y1="75" x2="148" y2="75"></line>
+        <line x1="26" y1="26" x2="124" y2="124"></line>
+        <line x1="124" y1="26" x2="26" y2="124"></line>
+        <line x1="13" y1="52" x2="137" y2="98"></line>
+        <line x1="52" y1="13" x2="98" y2="137"></line>
+        <line x1="137" y1="52" x2="13" y2="98"></line>
+        <line x1="98" y1="13" x2="52" y2="137"></line>
+      </g>
+      <g stroke="rgba(217,0,255,.45)" stroke-width="1" fill="none">
+        <circle cx="75" cy="75" r="17"></circle>
+        <circle cx="75" cy="75" r="39"></circle>
+        <circle cx="75" cy="75" r="61"></circle>
+        <circle cx="75" cy="75" r="83"></circle>
+      </g>
+      <path d="M75 75 Q86 60 75 50 Q63 40 61 28 Q70 40 75 50 Q80 62 75 75" stroke="rgba(255,0,127,.45)" stroke-width="1" fill="none"></path>
+    </svg>
+    <canvas id="cornerSpider" class="spider sick" width="40" height="40" aria-hidden="true"></canvas>
+    <span id="spiderSweat" class="spider-sweat" aria-hidden="true">💧</span>
+  </div>
+  <div id="nomBubble" class="nom-bubble" aria-hidden="true"></div>
+  <div id="cursorBug" class="cursor-bug" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <circle class="bug-glow" cx="20" cy="22" r="13"></circle>
+      <ellipse class="bug-wing" cx="10" cy="18" rx="7" ry="3"></ellipse>
+      <ellipse class="bug-wing" cx="12" cy="23" rx="6" ry="3"></ellipse>
+      <ellipse cx="17" cy="21" rx="5" ry="3.8" fill="#3a2a6e" stroke="#8a5cff" stroke-width="1.4"></ellipse>
+      <ellipse cx="24.5" cy="21.5" rx="4" ry="3.2" fill="#6a2bd8" stroke="#8a5cff" stroke-width="1.4"></ellipse>
+      <ellipse cx="29.5" cy="21.5" rx="2.4" ry="1.9" fill="#ffe9a8" stroke="#d99a2b" stroke-width="1"></ellipse>
+      <path class="bug-antenna" d="M13 17 q-4 -6 -2 -10"></path>
+      <path class="bug-antenna" d="M19 16 q-1 -7 3 -10"></path>
+      <circle cx="14.5" cy="20" r="1" fill="#fff" opacity=".9"></circle>
+    </svg>
+  </div>
+
+  <!-- lore modal -->
+  <div id="loreModal" hidden>
+    <div class="lore-card">
+      <button id="loreClose" class="lore-close">✕</button>
+      <h2 id="loreTitle" class="lore-title"></h2>
+      <p id="loreText" class="lore-text"></p>
+      <p class="lore-sign cursive">— with love, the chimeras</p>
+    </div>
+  </div>
+
+  <!-- ══════════ THE RECORD DRAWER · a hidden music drawer ══════════ -->
+  <button id="musicTab" title="the record drawer">♪</button>
+  <div id="musicDrawer" aria-hidden="true">
+    <div class="music-panel">
+      <i class="tape"></i>
+      <button id="musicClose" class="drawer-close" title="close">✕</button>
+      <h3 class="music-title">the record drawer</h3>
+      <p class="music-sub">SOME MUSIC FOR THE QUIET HOURS</p>
+      <div id="songList"></div>
+      <p class="now-playing" id="nowPlaying"></p>
+    </div>
+  </div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   The Violet Web Café — script.js
+   • loading screen: a spider spins a violet web (≥ 5s)
+   • a daily desktop: letters, poetry of the night, gallery
+   • movable lore menu (Who / What / When / Why / Where)
+   • localStorage keeps your thoughts, saved poems, and layout
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+
+  /* ───────────────────────── 1 · LORE ───────────────────────── */
+  const LORE = {
+    who: {
+      title: "Who",
+      text: "We are the chimeras of the violet web — three hearts, six wings, and one very long tail, all tucked behind a single apron. There is Auren, who pours the night: a lion who dreamed himself half eagle and half serpent. There is Veyla, the silver-winged fox, who keeps the letters no one ever finishes reading. There is Ost, moth-eyed and quiet, who minds the door. And Charlotte, the spider-waif, who mends whatever we tear when we argue about the poetry. We are never one thing. That is the whole trick of it."
+    },
+    what: {
+      title: "What",
+      text: "A small crooked café nailed loosely to the under-edge of the etherrealm. We serve tea brewed from dissolved night, mooncake baked out of remembered weather, and a quiet corner to leave a thought you no longer need. On slow evenings the harp plays itself and the teacups drift between the tables so that nobody has to ask. Everything is paid for in confessions and stray lines of poetry, though no one here is very strict about the price."
+    },
+    when: {
+      title: "When",
+      text: "Always and never at the same time. The café opens at the hour between your last thought and your first one, and closes when the web catches a falling star. The easiest way to find the right moment is to follow a line of poetry that keeps repeating itself until you give in — that is the door. Wednesdays are especially good for arriving."
+    },
+    why: {
+      title: "Why",
+      text: "Because some thoughts are too heavy to carry alone, and some are far too lovely to keep. The chimeras collect them, sew them into the web, and read them back to you on nights when you have forgotten your own name. To leave a thought here is not to lose it. It is to trust the web with it. That is what the web is for."
+    },
+    where: {
+      title: "Where",
+      text: "At the seam where inkblue meets deeppurple, just past the violet hour. Look for the glow between two heartbeats. If you smell violets, and hear a harp and a kettle sighing, you are almost there — stand very still, and the web will carry you the rest of the way."
+    }
+  };
+
+  /* ─────────────── 2 · POETRY OF THE ROMANTICS ─────────────── */
+  const POEMS = [
+    { text: "A thing of beauty is a joy for ever:\nIts loveliness increases; it will never\nPass into nothingness.", author: "John Keats", source: "Endymion, 1818" },
+    { text: "She walks in beauty, like the night\nOf cloudless climes and starry skies;\nAnd all that's best of dark and bright\nMeet in her aspect and her eyes.", author: "Lord Byron", source: "She Walks in Beauty, 1814" },
+    { text: "Music, when soft voices die,\nVibrates in the memory;\nOdours, when sweet violets sicken,\nLive within the sense they quicken.", author: "Percy Bysshe Shelley", source: "Music, When Soft Voices Die, 1824" },
+    { text: "Love seeketh not itself to please,\nNor for itself hath any care,\nBut for another gives its ease,\nAnd builds a Heaven in Hell's despair.", author: "William Blake", source: "The Clod and the Pebble, 1794" },
+    { text: "O my Luve's like a red, red rose,\nThat's newly sprung in June:\nO my Luve's like the melodie\nThat's sweetly play'd in tune.", author: "Robert Burns", source: "A Red, Red Rose, 1794" },
+    { text: "She dwelt among the untrodden ways\nBeside the springs of Dove,\nA maid whom there were none to praise\nAnd very few to love.", author: "William Wordsworth", source: "She Dwelt Among the Untrodden Ways, 1798" },
+    { text: "He prayeth well, who loveth well\nBoth man and bird and beast.", author: "Samuel Taylor Coleridge", source: "The Rime of the Ancient Mariner, 1798" },
+    { text: "How do I love thee? Let me count the ways.\nI love thee to the depth and breadth and height\nMy soul can reach.", author: "Elizabeth Barrett Browning", source: "Sonnets from the Portuguese XLIII, 1850" },
+    { text: "So, we'll go no more a roving\nSo late into the night,\nThough the heart be still as loving,\nAnd the moon be still as bright.", author: "Lord Byron", source: "So We'll Go No More a Roving, 1817" },
+    { text: "That Love is all there is,\nIs all we know of Love;\nIt is enough, the freight should be\nProportioned to the groove.", author: "Emily Dickinson", source: "c. 1863" },
+    { text: "Believe me, if all those endearing young charms,\nWhich I gaze on so fondly to-day,\nWere to change by to-morrow, and fleet in my arms,\nLike fairy-gifts fading away,\nThou wouldst still be adored.", author: "Thomas Moore", source: "Believe Me, If All Those Endearing Young Charms, 1808" },
+    { text: "I am! yet what I am, who cares, or knows?\nMy friends forsake me like a memory lost.", author: "John Clare", source: "I Am, 1848" },
+    { text: "The garlands fade that Spring so lately wove,\nEach simple flower, which she had nursed in dew,\nAnemonies, that spangled every grove.", author: "Charlotte Smith", source: "Written at the Close of Spring, 1784" },
+    { text: "I love not Man the less, but Nature more.", author: "Lord Byron", source: "Childe Harold's Pilgrimage, 1818" }
+  ];
+
+  /* ─────────────────── 3 · storage helpers ─────────────────── */
+  const store = {
+    get(key, fallback) {
+      try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+      catch (e) { return fallback; }
+    },
+    set(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* full */ }
+    }
+  };
+
+  /* ───────────── 3.5 · the secret senders — five keepers of the café ───────────── */
+  const SECRETS = [
+    { name: "Hans", color: "#95b3ec", msgs: [
+      "The wall remembers what the day forgets. I left a thought waiting under your pillow — don't tell the moths.",
+      "Between the tea and the mooncake, I think I fell in love with the quiet hour. You were in it.",
+      "A note, twice folded: the web keeps the sweetest things twice, and I keep your secrets once."
+    ] },
+    { name: "Star", color: "#c9a6ff", msgs: [
+      "I saw your name written in fireflies last night and couldn't keep it a secret any longer.",
+      "The stars are only moths that learned to fly higher. Keep looking up — I do.",
+      "I made a wish on your behalf. The cloud owes me one now, but it was worth it."
+    ] },
+    { name: "Chari", color: "#d985ff", msgs: [
+      "I may have hidden a poem in the Letter Home drawer. Check under 'C'. (Don't tell anyone I told you.)",
+      "If anyone asks, the teacup did it. The teacup is very brave.",
+      "Pssst — the honey is in the second jar, the one with no label. Use it wisely."
+    ] },
+    { name: "Milo", color: "#8a2be2", msgs: [
+      "I watch the door so the night stays gentle for you. Always.",
+      "Your chair is saved by the fire. Don't be late — it gets cold on this side of the web.",
+      "If the web ever tears, I'll be the one mending it. But don't tell Charlotte."
+    ] },
+    { name: "Miki", color: "#a678ff", msgs: [
+      "I wrote this three times and folded it twice. Please read it kindly.",
+      "You make the café feel warmer. That's all. That's everything.",
+      "I left a violet flower by the window for you. It's the one with the tiny moth on it."
+    ] }
+  ];
+  let secretIdx = 0;
+  let secretTimer = null;
+  let justDragged = false;
+
+  /* ─────────── 4 · the loading web & the spider ─────────── */
+
+  const loader = document.getElementById("loader");
+  const webCanvas = document.getElementById("webCanvas");
+  const wctx = webCanvas.getContext("2d");
+
+  const MIN_LOAD_MS = 6500;
+  let loadT0 = 0;
+  let loadDone = false;
+
+  function sizeCanvas(canvas) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return ctx;
+  }
+
+  function drawWeb(ctx, t, w, h, phase) {
+    const cx = w / 2, cy = h * 0.40;
+    const maxR = Math.min(w, h) * 0.42;
+    const SPOKES = 18;
+    const TURNS = 3.4;
+    const N = Math.round(SPOKES * TURNS);
+    const dA = (Math.PI * 2) / SPOKES;
+
+    /* fixed organic jitter per spoke (deterministic, so the web never shivers) */
+    const JIT = Array.from({ length: SPOKES }, (_, i) =>
+      (0.5 * Math.sin(i * 2.7) + 0.5 * Math.sin(i * 1.31 + 1)) * 0.035);
+    const JIT2 = Array.from({ length: SPOKES }, (_, i) =>
+      (Math.sin(i * 3.9) * 0.5 + Math.sin(i * 5.7 + 0.4) * 0.5) * 0.02);
+    const wob = (u) => 0.06 * Math.sin(u * 31) + 0.04 * Math.sin(u * 73 + 1.3);
+
+    const vert = (j) => {
+      const u = j / N;
+      const ang = j * dA + JIT2[j % SPOKES] * (1.15 - u);
+      const r = maxR * Math.pow(u, 0.5) * (1 + wob(u) + JIT[j % SPOKES]);
+      return { x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r };
+    };
+
+    ctx.clearRect(0, 0, w, h);
+
+    /* soft breath of light behind the web */
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 1.6);
+    glow.addColorStop(0, "rgba(166,120,255,0.20)");
+    glow.addColorStop(1, "rgba(14,18,48,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
+
+    /* irregular outer frame — one polygon joining the spoke tips */
+    ctx.strokeStyle = "rgba(217,133,255,0.28)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let j = 0; j <= SPOKES; j++) {
+      const ang = j * dA;
+      const r = maxR * (1 + JIT[j % SPOKES]);
+      const x = cx + Math.cos(ang) * r, y = cy + Math.sin(ang) * r;
+      if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    /* spokes, bowed gently toward their frame points */
+    ctx.strokeStyle = "rgba(217,133,255,0.34)";
+    ctx.lineWidth = 1;
+    for (let j = 0; j < SPOKES; j++) {
+      const ang = j * dA;
+      const rEnd = maxR * (1 + JIT[j]);
+      const bx = cx + Math.cos(ang) * rEnd * 1.09;
+      const by = cy + Math.sin(ang) * rEnd * 1.09;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.quadraticCurveTo(bx, by, cx + Math.cos(ang) * rEnd, cy + Math.sin(ang) * rEnd);
+      ctx.stroke();
+    }
+
+    /* the hub */
+    ctx.strokeStyle = "rgba(217,133,255,0.4)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.stroke();
+
+    /* the capture spiral: a polygonal thread following the spokes,
+       spun from the frame inward, straight between spoke to spoke */
+    let spiderP = null, tangent = 0;
+    if (t > 0.02) {
+      const jS = Math.floor(N * (1 - Math.max(t, 0.05)));
+      ctx.save();
+      ctx.strokeStyle = "rgba(230,204,255,0.95)";
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = "round";
+      ctx.shadowColor = "rgba(217,133,255,0.8)";
+      ctx.shadowBlur = 5;
+      ctx.beginPath();
+      const p0 = vert(jS);
+      ctx.moveTo(p0.x, p0.y);
+      for (let j = jS + 1; j <= N; j++) {
+        const p = vert(j);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+      ctx.restore();
+
+      /* the spider sits mid-thread on the newest segment, heading to the hub */
+      const segA = vert(jS);
+      const segB = vert(Math.min(jS + 1, N));
+      spiderP = { x: (segA.x + segB.x) / 2, y: (segA.y + segB.y) / 2 };
+      tangent = Math.atan2(segA.y - segB.y, segA.x - segB.x);
+    }
+
+    if (t < 1 && spiderP) {
+      drawSpider(ctx, spiderP.x, spiderP.y, tangent, phase, 2.2);
+    } else {
+      /* the spider reaches the hub */
+      const pulse = 0.5 + 0.5 * Math.sin(phase * 4);
+      ctx.fillStyle = `rgba(255,217,138,${0.45 + pulse * 0.55})`;
+      ctx.shadowColor = "rgba(255,217,138,0.9)";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 2.5 + pulse * 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function drawSpider(ctx, x, y, ang, phase, scl, swayAmp) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(ang);
+    ctx.scale(scl, scl);
+    ctx.lineCap = "round";
+    /* 8 splayed two-jointed legs, fanning back from the hips */
+    ctx.lineWidth = 2.6;
+    for (let side = -1; side <= 1; side += 2) {
+      for (let k = 0; k < 4; k++) {
+        const a = (0.5 + k * 0.24) * side;
+        const len = 10 + (3 - k) * 1.2;
+        const sway = Math.sin(phase * 9 + k * 1.7 + (side < 0 ? 0 : 2)) * (swayAmp == null ? 0.1 : swayAmp);
+        const ang2 = Math.PI + a + sway;
+        const hipX = -1, hipY = side * 2.4;
+        const kneeX = hipX + Math.cos(ang2 * 0.8) * len * 0.55;
+        const kneeY = hipY + Math.sin(ang2 * 0.8) * len * 0.55;
+        const footX = hipX + Math.cos(ang2) * len;
+        const footY = hipY + Math.sin(ang2) * len;
+        ctx.beginPath();
+        ctx.moveTo(hipX, hipY);
+        ctx.lineTo(kneeX, kneeY);
+        ctx.lineTo(footX, footY);
+        ctx.stroke();
+      }
+    }
+    ctx.strokeStyle = "#e9dcff";
+    ctx.lineWidth = 1.3;
+    for (let side = -1; side <= 1; side += 2) {
+      for (let k = 0; k < 4; k++) {
+        const a = (0.5 + k * 0.24) * side;
+        const len = 10 + (3 - k) * 1.2;
+        const sway = Math.sin(phase * 9 + k * 1.7 + (side < 0 ? 0 : 2)) * (swayAmp == null ? 0.1 : swayAmp);
+        const ang2 = Math.PI + a + sway;
+        const hipX = -1, hipY = side * 2.4;
+        const kneeX = hipX + Math.cos(ang2 * 0.8) * len * 0.55;
+        const kneeY = hipY + Math.sin(ang2 * 0.8) * len * 0.55;
+        const footX = hipX + Math.cos(ang2) * len;
+        const footY = hipY + Math.sin(ang2) * len;
+        ctx.beginPath();
+        ctx.moveTo(hipX, hipY);
+        ctx.lineTo(kneeX, kneeY);
+        ctx.lineTo(footX, footY);
+        ctx.stroke();
+      }
+    }
+    /* light body, dark outline, so it stands out from the violet web */
+    ctx.fillStyle = "#efe6ff";
+    ctx.strokeStyle = "#4a1270";
+    ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.ellipse(-3.6, 0, 5.4, 3.9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#c9a6ff";
+    ctx.beginPath(); ctx.ellipse(1.6, 0, 2.9, 2.4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffd0ea";
+    ctx.beginPath(); ctx.arc(5.2, 0, 1.9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.beginPath(); ctx.arc(-4.6, -1.2, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function runLoader() {
+    const ctx = sizeCanvas(webCanvas);
+    const w = webCanvas.clientWidth, h = webCanvas.clientHeight;
+    loadT0 = performance.now();
+
+    function frame(now) {
+      const elapsed = now - loadT0;
+      const t = Math.min(elapsed / MIN_LOAD_MS, 1);
+      const eased = 1 - Math.pow(1 - t, 2.2); /* gentle ease-out so the finish feels like a flourish */
+
+      ctx.clearRect(0, 0, w, h);
+      drawWeb(ctx, eased, w, h, now / 1000);
+
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else if (!loadDone) {
+        loadDone = true;
+        setTimeout(() => poof(ctx, w, h), 260);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* the spider vanishes into the hub in a violet puff, then the site pours out */
+  function poof(ctx, w, h) {
+    const cx = w / 2, cy = h * 0.40;
+    const COLORS = ["#d985ff", "#a678ff", "#95b3ec", "#e9dcff", "#b9d0f7"];
+    const parts = [];
+    for (let i = 0; i < 52; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const spd = 40 + Math.random() * 170;
+      parts.push({
+        x: cx, y: cy,
+        vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+        life: 1, decay: 1.4 + Math.random() * 1.8,
+        r: 1.6 + Math.random() * 3.6,
+        c: COLORS[i % COLORS.length]
+      });
+    }
+    const t0 = performance.now();
+    (function loop(now) {
+      const dt = (now - t0) / 1000;
+      ctx.clearRect(0, 0, w, h);
+      drawWeb(ctx, 1, w, h, now / 1000);
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      let alive = false;
+      for (const p of parts) {
+        if (p.life <= 0) continue;
+        alive = true;
+        p.life -= dt * p.decay;
+        if (p.life <= 0) continue;
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        p.vx *= 0.96; p.vy *= 0.96;
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.fillStyle = p.c;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      if (alive && performance.now() - t0 < 1500) requestAnimationFrame(loop);
+      else showIntro();
+    })(t0);
+  }
+
+  window.addEventListener("resize", () => {
+    const ctx = sizeCanvas(webCanvas);
+    const w = webCanvas.clientWidth, h = webCanvas.clientHeight;
+    if (!loadDone) drawWeb(ctx, 0.02, w, h, 0);
+  });
+
+  /* the front door: after the web is spun, ask how the web should call you */
+  function showIntro() {
+    const card = document.getElementById("introCard");
+    const name = store.get("vwc-member", "");
+    document.getElementById("introBack").hidden = !name;
+    document.getElementById("introJoin").hidden = !!name;
+    document.getElementById("introSwitchBtn").hidden = !name;
+    if (name) document.getElementById("introBackName").textContent = name;
+    card.classList.add("show");
+  }
+
+  function enterCafe() {
+    const card = document.getElementById("introCard");
+    card.classList.add("bye");
+    const desktop = document.getElementById("desktop");
+    setTimeout(() => {
+      desktop.classList.add("on");
+      startMotes();
+      initDaily();
+      initCommunity();
+      anchorClouds();
+    }, 220);
+    setTimeout(() => loader.classList.add("out"), 320);
+    setTimeout(() => { loader.style.display = "none"; }, 1150);
+  }
+
+  /* the little clouds hover just above the windows they open, so the place you
+     tap is the place the news appears — anchored even when a window is closed */
+  function anchorClouds() {
+    const msg = document.getElementById("msgCloud");
+    const wish = document.getElementById("wishCloud");
+    const bubble = document.getElementById("msgCloudBubble");
+    if (!msg || !wish) return;
+    const place = (cloud, winId, bubbleEl) => {
+      const custom = store.get("vwc-cloud-pos", {});
+      const saved = custom[cloud.id];
+      if (saved && saved.left && saved.top) {
+        cloud.style.left = saved.left;
+        cloud.style.top = saved.top;
+        if (bubbleEl) {
+          bubbleEl.style.left = saved.left;
+          bubbleEl.style.top = (parseFloat(saved.top) - 42) + "px";
+        }
+        return;
+      }
+      const win = document.getElementById(winId);
+      if (!win) return;
+      const wasClosed = win.classList.contains("closed");
+      if (wasClosed) win.classList.remove("closed");
+      const r = win.getBoundingClientRect();
+      if (wasClosed) win.classList.add("closed");
+      if (!r.width || !r.height) return;
+      const cw = cloud.offsetWidth || 80;
+      const ch = cloud.offsetHeight || 50;
+      let left = r.left + r.width / 2 - cw / 2;
+      let top = r.top - ch - 4;
+      left = Math.max(8, Math.min(left, window.innerWidth - cw - 8));
+      top = Math.max(8, Math.min(top, window.innerHeight - ch - 8));
+      cloud.style.left = left + "px";
+      cloud.style.top = top + "px";
+      if (bubbleEl) {
+        bubbleEl.style.left = left + "px";
+        bubbleEl.style.top = (top - 42) + "px";
+      }
+    };
+    place(msg, "bulletinWin", bubble);
+    place(wish, "wishWin", null);
+  }
+  window.addEventListener("resize", anchorClouds);
+  document.getElementById("desktop").addEventListener("scroll", anchorClouds);
+
+  function initIntro() {
+    const nameInput = document.getElementById("introName");
+    const joinBtn = document.getElementById("introJoinBtn");
+    const enterBtn = document.getElementById("introEnterBtn");
+    const guestBtn = document.getElementById("introGuestBtn");
+    const switchBtn = document.getElementById("introSwitchBtn");
+    const join = () => {
+      const n = nameInput.value.trim().replace(/\s+/g, " ");
+      if (n) store.set("vwc-member", n.slice(0, 20));
+      enterCafe();
+    };
+    joinBtn.addEventListener("click", join);
+    nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") join(); });
+    enterBtn.addEventListener("click", enterCafe);
+    guestBtn.addEventListener("click", enterCafe);
+    switchBtn.addEventListener("click", () => {
+      store.set("vwc-member", "");
+      document.getElementById("introBack").hidden = true;
+      document.getElementById("introJoin").hidden = false;
+      document.getElementById("introSwitchBtn").hidden = true;
+      nameInput.focus();
+    });
+  }
+
+  /* ───────────────── 5 · ambient motes ───────────────── */
+  function startMotes() {
+    const canvas = document.getElementById("motesCanvas");
+    const ctx = sizeCanvas(canvas);
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const COLORS = ["217,133,255", "166,120,255", "149,179,236", "190,160,255"];
+    const motes = Array.from({ length: 70 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: 0.6 + Math.random() * 1.8,
+      c: COLORS[Math.floor(Math.random() * COLORS.length)],
+      vy: -(0.05 + Math.random() * 0.22),
+      vx: (Math.random() - 0.5) * 0.12,
+      tw: Math.random() * Math.PI * 2,
+      ts: 0.5 + Math.random() * 1.6
+    }));
+
+    (function loop(now) {
+      ctx.clearRect(0, 0, w, h);
+      for (const m of motes) {
+        m.x += m.vx; m.y += m.vy;
+        if (m.y < -8) { m.y = h + 8; m.x = Math.random() * w; }
+        if (m.x < -8) m.x = w + 8; else if (m.x > w + 8) m.x = -8;
+        const tw = 0.35 + 0.65 * Math.abs(Math.sin(now / 1000 * m.ts + m.tw));
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${m.c},${tw})`;
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      requestAnimationFrame(loop);
+    })(performance.now());
+  }
+
+  /* ───────────────── 6 · daily notes & collection ───────────────── */
+  function initDaily() {
+    /* date */
+    const now = new Date();
+    const ord = (n) => {
+      const s = ["th", "st", "nd", "rd"], v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    };
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    document.getElementById("todayEl").textContent =
+      `${days[now.getDay()]}, the ${ord(now.getDate())} of ${months[now.getMonth()]} ${now.getFullYear()} — a good night for moths`;
+
+    /* note saving */
+    const input = document.getElementById("thoughtInput");
+    const saveBtn = document.getElementById("saveThoughtBtn");
+    const saveMsg = document.getElementById("saveMsg");
+    const draftKey = "vwc-draft";
+    input.value = store.get(draftKey, "");
+    input.addEventListener("input", () => store.set(draftKey, input.value));
+
+    saveBtn.addEventListener("click", () => {
+      const text = input.value.trim();
+      if (!text) return;
+      addCollected(text, "thought");
+      input.value = "";
+      store.set(draftKey, "");
+      saveMsg.hidden = false;
+      setTimeout(() => { saveMsg.hidden = true; }, 2600);
+    });
+
+    /* poetry */
+    showRandomPoem();
+    document.getElementById("newPoemBtn").addEventListener("click", showRandomPoem);
+    const keepBtn = document.getElementById("keepPoemBtn");
+    keepBtn.addEventListener("click", () => {
+      const t = document.getElementById("poemText").textContent;
+      const a = document.getElementById("poemAuthor").textContent;
+      if (!t.trim()) return;
+      addCollected(t + "\n— " + a, "poem");
+      keepBtn.classList.add("kept");
+      setTimeout(() => keepBtn.classList.remove("kept"), 2000);
+    });
+
+    renderCollected();
+  }
+
+  function showRandomPoem() {
+    const poemText = document.getElementById("poemText");
+    const authorEl = document.getElementById("poemAuthor");
+    const last = store.get("vwc-lastPoem", -1);
+    let idx = Math.floor(Math.random() * POEMS.length);
+    if (POEMS.length > 1) while (idx === last) idx = Math.floor(Math.random() * POEMS.length);
+    store.set("vwc-lastPoem", idx);
+    const p = POEMS[idx];
+    poemText.textContent = p.text;
+    authorEl.textContent = `${p.author} · ${p.source}`;
+  }
+
+  function addCollected(text, kind) {
+    const list = store.get("vwc-collected", []);
+    list.unshift({ t: text, k: kind });
+    store.set("vwc-collected", list);
+    renderCollected();
+  }
+
+  function renderCollected() {
+    const ul = document.getElementById("collectedList");
+    ul.innerHTML = "";
+    const list = store.get("vwc-collected", []);
+    if (!list.length) {
+      const li = document.createElement("li");
+      li.className = "cursive";
+      li.textContent = "the web is empty — leave it a thought";
+      ul.appendChild(li);
+      return;
+    }
+    for (const item of list) {
+      const li = document.createElement("li");
+      const span = document.createElement("span");
+      span.style.whiteSpace = "pre-wrap";
+      span.textContent = (item.k === "poem" ? "❦ " : "✎ ") + item.t;
+      const del = document.createElement("span");
+      del.className = "del";
+      del.textContent = "✕";
+      del.title = "let go of this";
+      del.addEventListener("click", () => {
+        const l = store.get("vwc-collected", []);
+        const i = l.indexOf(item);
+        if (i > -1) { l.splice(i, 1); store.set("vwc-collected", l); renderCollected(); }
+      });
+      li.appendChild(span);
+      li.appendChild(del);
+      ul.appendChild(li);
+    }
+  }
+
+  /* ───────────────── 7 · window close buttons ───────────────── */
+  document.querySelectorAll(".window").forEach((win) => {
+    const minBtn = win.querySelector(".minimize");
+    minBtn.addEventListener("click", () => closeWin(win));
+  });
+
+  /* ───────────────── 8 · lore modals ───────────────── */
+  const loreModal = document.getElementById("loreModal");
+  const loreTitle = document.getElementById("loreTitle");
+  const loreText = document.getElementById("loreText");
+
+  document.querySelectorAll(".menu-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const entry = LORE[btn.dataset.q];
+      loreTitle.textContent = entry.title;
+      loreText.textContent = entry.text;
+      const card = loreModal.querySelector(".lore-card");
+      card.classList.remove("spot");
+      void card.offsetWidth;
+      card.classList.add("spot");
+      loreModal.hidden = false;
+    });
+  });
+  document.getElementById("loreClose").addEventListener("click", () => { loreModal.hidden = true; });
+  loreModal.addEventListener("click", (e) => { if (e.target === loreModal) loreModal.hidden = true; });
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape") loreModal.hidden = true; });
+
+  /* ───────────────── 9 · desk buttons (open & anchor windows) ───────────────── */
+  const deskBtns = document.querySelectorAll(".desk-btn");
+  function closeWin(win) {
+    win.classList.add("closed");
+    win.classList.remove("spot");
+    const b = [...deskBtns].find((x) => x.dataset.win === win.id);
+    if (b) b.classList.remove("on");
+  }
+  function setWin(win, open) {
+    win.classList.toggle("closed", !open);
+    if (!open) return;
+    deskBtns.forEach((b) => b.classList.toggle("on", b.dataset.win === win.id));
+    clearTimeout(win._spotT);
+    win.classList.remove("spot");
+    void win.offsetWidth;
+    win.classList.add("spot");
+    win._spotT = setTimeout(() => win.classList.remove("spot"), 3600);
+    requestAnimationFrame(() => {
+      win.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
+  deskBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const win = document.getElementById(btn.dataset.win);
+      setWin(win, true);
+      if (win.id === "wallWin") {
+        store.set("vwc-wall-seen", Date.now());
+        const nb = document.getElementById("notifyBtn");
+        if (nb) { nb.classList.remove("glow"); }
+      }
+    });
+  });
+
+  /* ───────── 9.5 · the record drawer · hidden music ═──────── */
+  /* Put your own music here — e.g. { title: "my song", url: "music.mp3" }
+     (upload your mp3 and paste its URL, or host it next to this file). */
+  const SONGS = [
+    { title: "the café hums · theme", url: "https://user.uploads.dev/file/fe5a11590f89a6c0e410cfc8afff97c9.mp3" }
+  ];
+  let musicAudio = null;
+  let musicIdx = 0;
+  function initMusicDrawer() {
+    const tab = document.getElementById("musicTab");
+    const drawer = document.getElementById("musicDrawer");
+    const list = document.getElementById("songList");
+    const now = document.getElementById("nowPlaying");
+    const closeBtn = document.getElementById("musicClose");
+    if (!tab || !drawer) return;
+
+    const playSong = (i) => {
+      musicIdx = (i + SONGS.length) % SONGS.length;
+      const s = SONGS[musicIdx];
+      if (!musicAudio) {
+        musicAudio = new Audio();
+        musicAudio.volume = 0.55;
+      }
+      const want = new URL(s.url, location.href).href;
+      if (musicAudio.src !== want) musicAudio.src = want;
+      musicAudio.loop = SONGS.length === 1;
+      musicAudio.play().catch(() => {});
+      now.textContent = "now spinning: " + s.title;
+      paint();
+    };
+    const paint = () => {
+      list.innerHTML = "";
+      SONGS.forEach((s, i) => {
+        const row = document.createElement("div");
+        row.className = "song" + (i === musicIdx && musicAudio && !musicAudio.paused ? " playing" : "");
+        const num = document.createElement("span");
+        num.className = "song-num";
+        num.textContent = String(i + 1).padStart(2, "0");
+        const t = document.createElement("span");
+        t.className = "song-title";
+        t.textContent = s.title;
+        const b = document.createElement("button");
+        b.className = "song-btn";
+        b.textContent = i === musicIdx && musicAudio && !musicAudio.paused ? "❚❚" : "▶";
+        b.addEventListener("click", () => {
+          if (i === musicIdx && musicAudio && !musicAudio.paused) {
+            musicAudio.pause();
+            paint();
+          } else {
+            playSong(i);
+          }
+        });
+        row.appendChild(num);
+        row.appendChild(t);
+        row.appendChild(b);
+        list.appendChild(row);
+      });
+    };
+    tab.addEventListener("click", () => {
+      const open = drawer.classList.toggle("open");
+      drawer.setAttribute("aria-hidden", open ? "false" : "true");
+      if (open) paint();
+    });
+    closeBtn.addEventListener("click", () => {
+      drawer.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+    });
+    if (musicAudio) musicAudio.addEventListener("ended", () => playSong(musicIdx + 1));
+    paint();
+    if (window.__cafeDebug) window.__cafeDebug.music = { audio: () => musicAudio, idx: () => musicIdx };
+  }
+
+  /* ───────── 9.6 · the corner web · Charlotte keeps watch ───────── */
+  function initCornerWeb() {
+    const webzone = document.getElementById("cornerWeb");
+    const spider = document.getElementById("cornerSpider");
+    const bubble = document.getElementById("nomBubble");
+    const bug = document.getElementById("cursorBug");
+    if (!webzone || !spider || !bubble) return;
+    const dpr = window.devicePixelRatio || 1;
+    const size = spider.clientWidth || 40;
+    spider.width = Math.round(size * dpr);
+    spider.height = Math.round(size * dpr);
+    const ctx = spider.getContext("2d");
+    ctx.scale(dpr, dpr);
+    let fed = false;
+    let eatingUntil = 0;
+    /* the spider holds perfectly still until it eats — then it moves for the
+       seven seconds the firefly is gone, and settles again afterwards */
+    (function drawLoop(now) {
+      ctx.clearRect(0, 0, size, size);
+      const phase = now / 1000;
+      const moving = fed && now < eatingUntil;
+      drawSpider(ctx, size / 2, size / 2, Math.PI / 2, phase * (moving ? 2.6 : 1.0), (size / 40) * 1.05, moving ? 0.17 : 0);
+      requestAnimationFrame(drawLoop);
+    })(performance.now());
+    const quips = [
+      "the web remembers everything you forget to keep.",
+      "one violet thread, mended every night.",
+      "your name is safe by the fire.",
+      "the tea is still warm, if you hurry.",
+      "leave a note by the door — someone may be looking for it.",
+      "three hearts, six wings, one very long tail.",
+      "moths steer by your heartbeat.",
+      "thoughts, pinned and kept, like fireflies.",
+      "Charlotte mends whatever we tear when we argue about the poetry."
+    ];
+    let timer = null;
+    const say = (t, ms) => {
+      bubble.textContent = t;
+      bubble.classList.add("show");
+      clearTimeout(timer);
+      timer = setTimeout(() => bubble.classList.remove("show"), ms || 2600);
+    };
+    webzone.addEventListener("click", () => {
+      spider.classList.remove("chomping");
+      void spider.offsetWidth;
+      spider.classList.add("chomping");
+      if (!fed) say("Charlotte isn't feeling well… a firefly snack would help her mend.");
+      else say(quips[Math.floor(Math.random() * quips.length)]);
+    });
+
+    /* the bug wielder: your cursor carries a firefly to the spider's mouth */
+    if (!bug) return;
+    const desktopEl = document.getElementById("desktop");
+    const feed = () => {
+      if (fed) return;
+      fed = true;
+      eatingUntil = performance.now() + 7000;
+      spider.classList.remove("sick");
+      spider.classList.add("chomping");
+      bug.classList.add("fed");
+      const r = webzone.getBoundingClientRect();
+      say("mmm — thank you! a firefly does wonders. I'm well again \uD83D\uDD78❤", 3400);
+      spawnSparkles(r.left + r.width / 2, r.top + r.height / 2);
+      setTimeout(() => bug.classList.remove("fed"), 7000);
+    };
+    let mx = -100, my = -100;
+    document.addEventListener("pointermove", (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    (function loop() {
+      bug.style.transform = "translate(" + mx + "px," + my + "px) translate(-50%,-50%)";
+      if (!fed && desktopEl && desktopEl.classList.contains("on")) {
+        const r = webzone.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        if (Math.hypot(mx - cx, my - cy) < 26) feed();
+      }
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  function spawnSparkles(x, y) {
+    const COLORS = ["#b9d0f7", "#95b3ec", "#d985ff", "#c9dcff"];
+    for (let i = 0; i < 9; i++) {
+      const s = document.createElement("span");
+      s.className = "sparkle";
+      s.style.background = COLORS[i % COLORS.length];
+      s.style.left = x + "px";
+      s.style.top = y + "px";
+      s.style.setProperty("--dx", (Math.random() * 2 - 1) * 64 + "px");
+      s.style.setProperty("--dy", (Math.random() * 2 - 1) * 64 - 24 + "px");
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 900);
+    }
+  }
+
+  /* ───────── 9.7 · secret notes + the moveable clouds ───────── */
+  function showSecret() {
+    const s = SECRETS[secretIdx % SECRETS.length];
+    secretIdx++;
+    const msg = s.msgs[Math.floor(Math.random() * s.msgs.length)];
+    let note = document.getElementById("secretNote");
+    if (!note) {
+      note = document.createElement("div");
+      note.id = "secretNote";
+      note.className = "secret-note";
+      note.setAttribute("aria-hidden", "true");
+      note.innerHTML =
+        '<i class="tape"></i>' +
+        '<button class="secret-close" title="tuck it away">✕</button>' +
+        '<p class="secret-label">a secret from the chimney corner…</p>' +
+        '<p class="secret-text"></p>' +
+        '<p class="secret-sign"></p>';
+      note.querySelector(".secret-close").addEventListener("click", hideSecret);
+      document.body.appendChild(note);
+    }
+    note.querySelector(".secret-text").textContent = msg;
+    const sign = note.querySelector(".secret-sign");
+    sign.textContent = "— " + s.name;
+    sign.style.color = s.color;
+    note.style.setProperty("--secret-accent", s.color);
+    note.classList.add("show");
+    note.setAttribute("aria-hidden", "false");
+    clearTimeout(secretTimer);
+    secretTimer = setTimeout(hideSecret, 8000);
+    try { chime(); } catch (e) { }
+  }
+
+  function hideSecret() {
+    const note = document.getElementById("secretNote");
+    if (note) { note.classList.remove("show"); note.setAttribute("aria-hidden", "true"); }
+  }
+
+  function makeDraggable(cloud, saveKey) {
+    let sx = 0, sy = 0, sl = 0, st = 0, dragging = false;
+    const onMove = (e) => moveTo(e.clientX, e.clientY);
+    const onTouchMove = (e) => { if (e.touches.length === 1) { e.preventDefault(); const t = e.touches[0]; moveTo(t.clientX, t.clientY); } };
+    const onEnd = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onEnd);
+      document.removeEventListener("touchmove", onTouchMove);
+      document.removeEventListener("touchend", onEnd);
+      cloud.classList.remove("dragging");
+      if (!dragging) return;
+      justDragged = true;
+      const pos = store.get("vwc-cloud-pos", {});
+      pos[saveKey] = { left: cloud.style.left, top: cloud.style.top };
+      store.set("vwc-cloud-pos", pos);
+      if (saveKey === "msgCloud") {
+        const bubble = document.getElementById("msgCloudBubble");
+        const left = parseFloat(cloud.style.left), top = parseFloat(cloud.style.top);
+        if (!isNaN(left)) bubble.style.left = left + "px";
+        if (!isNaN(top)) bubble.style.top = (top - 42) + "px";
+      }
+    };
+    function moveTo(x, y) {
+      const dx = x - sx, dy = y - sy;
+      if (!dragging && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) dragging = true;
+      if (!dragging) return;
+      const cw = cloud.offsetWidth || 80, ch = cloud.offsetHeight || 50;
+      let left = sl + dx, top = st + dy;
+      left = Math.max(8, Math.min(left, window.innerWidth - cw - 8));
+      top = Math.max(8, Math.min(top, window.innerHeight - ch - 8));
+      cloud.style.left = left + "px";
+      cloud.style.top = top + "px";
+    }
+    const start = (x, y) => {
+      dragging = false;
+      sx = x; sy = y;
+      const r = cloud.getBoundingClientRect();
+      sl = r.left; st = r.top;
+      cloud.classList.add("dragging");
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onEnd);
+      document.addEventListener("touchmove", onTouchMove, { passive: false });
+      document.addEventListener("touchend", onEnd);
+    };
+    cloud.addEventListener("mousedown", (e) => { if (e.button !== 0) return; e.preventDefault(); start(e.clientX, e.clientY); });
+    cloud.addEventListener("touchstart", (e) => { if (e.touches.length !== 1) return; e.preventDefault(); const t = e.touches[0]; start(t.clientX, t.clientY); }, { passive: false });
+  }
+
+  /* ───────── 10 · the community (wall · welcome · bell) ───────── */
+
+  /* Live community runs on YOUR FREE Supabase project.
+       1) Run community.sql in the Supabase SQL editor (creates the tables).
+       2) Dashboard → Authentication → Sign-in method → enable "Anonymous".
+       3) Dashboard → Database → Realtime → enable `wall`, `wishes`,
+          `questions` and `checkins`.
+       4) Paste the Project URL + anon key below.
+     Leave them empty to keep cozy guest mode — everything still works, just
+     privately on this device, with chimeras for company. */
+  const COMMUNITY = {
+    supabase: { url: "", anonKey: "" }
+  };
+  const LIVE = !!(COMMUNITY.supabase.url && COMMUNITY.supabase.anonKey);
+
+  
+
+  let supabasePromise = null;
+  function getSupabase() {
+    if (supabasePromise) return supabasePromise;
+    supabasePromise = new Promise((resolve, reject) => {
+      if (window.supabase) {
+        resolve(window.supabase.createClient(COMMUNITY.supabase.url, COMMUNITY.supabase.anonKey));
+        return;
+      }
+      const s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+      s.onload = () => resolve(window.supabase.createClient(COMMUNITY.supabase.url, COMMUNITY.supabase.anonKey));
+      s.onerror = () => reject(new Error("could not load the etherwire link"));
+      document.head.appendChild(s);
+    });
+    return supabasePromise;
+  }
+
+  function myName() {
+    const n = store.get("vwc-member", "");
+    if (n) return n;
+    return "moth-" + Math.floor(1000 + Math.random() * 9000);
+  }
+  function displayName() {
+    return store.get("vwc-member", "");
+  }
+  function todayStr(d) {
+    const dt = d || new Date();
+    return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
+  }
+
+  function initCommunity() {
+    initMusicDrawer();
+    initWall();
+    initWish();
+    initBulletin();
+    initBell();
+    initStreak();
+    registerPWA();
+  }
+
+  /* ══════════ the message wall ══════════ */
+  function initWall() {
+    const to = document.getElementById("wallTo");
+    const input = document.getElementById("wallInput");
+    const sendBtn = document.getElementById("wallSend");
+    const statusEl = document.getElementById("wallStatus");
+    const wallWinEl = document.getElementById("wallWin");
+    const notifyBtn = document.getElementById("notifyBtn");
+    const notifyCount = document.getElementById("notifyCount");
+    const msgCloud = document.getElementById("msgCloud");
+    const msgCount = document.getElementById("msgCount");
+    const msgBubble = document.getElementById("msgCloudBubble");
+    const seenKey = "vwc-wall-seen";
+    let msgBubbleTimer = null;
+
+    const updateNotify = (unread) => {
+      if (notifyBtn) {
+        if (unread > 0) {
+          notifyBtn.classList.add("glow");
+          notifyBtn.title = unread + (unread === 1 ? " message" : " messages") + " for you";
+          notifyCount.hidden = false;
+          notifyCount.textContent = unread > 99 ? "99+" : unread;
+        } else {
+          notifyBtn.classList.remove("glow");
+          notifyBtn.title = "no new messages";
+          notifyCount.hidden = true;
+        }
+      }
+      if (msgCloud) {
+        if (unread > 0) {
+          msgCloud.classList.add("active");
+          msgCount.hidden = false;
+          msgCount.textContent = unread > 99 ? "99+" : unread;
+        } else {
+          msgCloud.classList.remove("active");
+          msgCount.hidden = true;
+        }
+      }
+    };
+    const openWall = () => {
+      store.set(seenKey, Date.now());
+      updateNotify(0);
+      setWin(wallWinEl, true);
+    };
+    window.__openWall = openWall;
+    if (notifyBtn) notifyBtn.addEventListener("click", () => { if (window.__openBulletin) window.__openBulletin(); else openWall(); });
+    if (msgCloud) msgCloud.addEventListener("click", () => {
+      if (justDragged) { justDragged = false; return; }
+      if (window.__openBulletin) window.__openBulletin(); else openWall();
+      showSecret();
+    });
+    const flashMsgCloud = (msg) => {
+      if (!msgCloud) return;
+      msgCloud.classList.remove("ping");
+      void msgCloud.offsetWidth;
+      msgCloud.classList.add("ping");
+      if (msgBubble) {
+        msgBubble.textContent = msg;
+        msgBubble.classList.add("show");
+        clearTimeout(msgBubbleTimer);
+        msgBubbleTimer = setTimeout(() => msgBubble.classList.remove("show"), 2600);
+      }
+    };
+
+    const render = (notes) => {
+      const me = displayName().toLowerCase();
+      const inboxEl = document.getElementById("wallInbox");
+      const listEl = document.getElementById("wallList");
+      inboxEl.innerHTML = "";
+      listEl.innerHTML = "";
+      const mine = notes.filter((n) => n.to && n.to.toLowerCase() !== "anyone" && n.to.toLowerCase() === me);
+      const pub = notes.filter((n) => !n.to || n.to.toLowerCase() === "anyone");
+      if (mine.length) {
+        const h = document.createElement("p");
+        h.className = "collected-label cursive";
+        h.textContent = "your inbox";
+        inboxEl.appendChild(h);
+        for (const n of mine.slice(0, 12)) {
+          const div = document.createElement("div");
+          div.className = "wall-note mine-inbox";
+          div.style.setProperty("--rrot", (Math.random() * 1.6 - 0.8).toFixed(2) + "deg");
+          const who = document.createElement("span");
+          who.className = "who";
+          who.textContent = n.from + " wrote: ";
+          const txt = document.createElement("span");
+          txt.className = "txt";
+          txt.textContent = n.text;
+          const to = document.createElement("span");
+          to.className = "to";
+          to.textContent = "for: you";
+          div.appendChild(who);
+          div.appendChild(txt);
+          div.appendChild(to);
+          inboxEl.appendChild(div);
+        }
+      }
+      if (pub.length) {
+        for (const n of pub.slice(0, 30)) {
+          const div = document.createElement("div");
+          div.className = "wall-note";
+          div.style.setProperty("--rrot", (Math.random() * 1.6 - 0.8).toFixed(2) + "deg");
+          const who = document.createElement("span");
+          who.className = "who";
+          who.textContent = n.from + ": ";
+          const txt = document.createElement("span");
+          txt.className = "txt";
+          txt.textContent = n.text;
+          const to = document.createElement("span");
+          to.className = "to";
+          to.textContent = "for: " + (n.to || "anyone");
+          div.appendChild(who);
+          div.appendChild(txt);
+          div.appendChild(to);
+          listEl.appendChild(div);
+        }
+      } else if (!mine.length) {
+        listEl.textContent = "the wall is empty — pin the first note.";
+      }
+      const seen = store.get(seenKey, 0);
+      let unread = 0;
+      for (const n of notes) {
+        const t = n.created_at ? new Date(n.created_at).getTime() : (n.t || 0);
+        if (!t || isNaN(t)) continue;
+        const isMine = n.to && n.to.toLowerCase() !== "anyone" && n.to.toLowerCase() === me;
+        if (isMine && t > seen) unread++;
+      }
+      updateNotify(unread);
+    };
+
+    const send = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      const note = { from: myName(), to: (to.value.trim() || "anyone"), text, t: Date.now() };
+      if (!LIVE) {
+        const list = store.get("vwc-wall", []);
+        list.unshift(note);
+        store.set("vwc-wall", list.slice(-60));
+        render(list);
+        input.value = "";
+        statusEl.textContent = "guest mode · notes stay on this device";
+        flashMsgCloud("✓ pinned — on the wall now ✦");
+        chime();
+        document.dispatchEvent(new CustomEvent("vwc-wall-updated"));
+        return;
+      }
+      getSupabase().then((supabase) => {
+        supabase.from("wall").insert(note).then(async () => {
+          input.value = "";
+          const { data } = await supabase.from("wall").select("*").order("created_at", { ascending: false }).limit(60);
+          render(data || []);
+          statusEl.textContent = "pinned to the web ✦";
+          flashMsgCloud("✓ pinned — on the wall now ✦");
+          chime();
+          document.dispatchEvent(new CustomEvent("vwc-wall-updated"));
+          setTimeout(() => { statusEl.textContent = "etherwire lit — the wall is open"; }, 2000);
+        });
+      });
+    };
+
+    if (!LIVE) {
+      statusEl.textContent = "guest mode · notes stay on this device";
+      render(store.get("vwc-wall", []));
+      sendBtn.addEventListener("click", send);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+      return;
+    }
+
+    statusEl.textContent = "reaching for the etherwire…";
+    getSupabase().then((supabase) => {
+      supabase.auth.signInAnonymously().then(async () => {
+        statusEl.textContent = "etherwire lit — the wall is open";
+        const { data } = await supabase.from("wall").select("*").order("created_at", { ascending: false }).limit(60);
+        render(data || []);
+        supabase.channel("wall-live").on("postgres_changes", { event: "INSERT", schema: "public", table: "wall" }, async () => {
+          const { data: d2 } = await supabase.from("wall").select("*").order("created_at", { ascending: false }).limit(60);
+          render(d2 || []);
+        }).subscribe();
+        sendBtn.addEventListener("click", send);
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+      });
+    }).catch(() => { statusEl.textContent = "the etherwire is dark — the wall waits."; });
+  }
+
+  /* ══════════ wishes & dreams ══════════ */
+  function initWish() {
+    const input = document.getElementById("wishInput");
+    const sendBtn = document.getElementById("wishSend");
+    const statusEl = document.getElementById("wishStatus");
+    const listEl = document.getElementById("wishList");
+    const cloud = document.getElementById("wishCloud");
+    const wishWinEl = document.getElementById("wishWin");
+    if (!input || !listEl) return;
+    if (cloud && wishWinEl) cloud.addEventListener("click", () => {
+      if (justDragged) { justDragged = false; return; }
+      setWin(wishWinEl, true);
+      showSecret();
+    });
+
+    const render = (wishes) => {
+      listEl.innerHTML = "";
+      if (!wishes.length) { listEl.textContent = "no wishes yet — the cloud is listening."; return; }
+      for (const wd of wishes.slice(0, 30)) {
+        const div = document.createElement("div");
+        div.className = "wish-note";
+        div.style.setProperty("--rrot", (Math.random() * 1.6 - 0.8).toFixed(2) + "deg");
+        const who = document.createElement("span");
+        who.className = "who";
+        who.textContent = wd.from_name || wd.from || "a nameless moth";
+        who.textContent += " wishes:";
+        const txt = document.createElement("span");
+        txt.className = "txt";
+        txt.textContent = wd.text;
+        const when = document.createElement("span");
+        when.className = "when";
+        const t = wd.created_at ? new Date(wd.created_at).getTime() : (wd.t || Date.now());
+        when.textContent = ago(t);
+        div.appendChild(who);
+        div.appendChild(txt);
+        div.appendChild(when);
+        listEl.appendChild(div);
+      }
+    };
+
+    const send = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      const wish = { from: myName(), text, t: Date.now() };
+      if (!LIVE) {
+        const list = store.get("vwc-wishes", []);
+        list.unshift(wish);
+        store.set("vwc-wishes", list.slice(-80));
+        render(list);
+        input.value = "";
+        statusEl.textContent = "your wish is in the cloud ☁";
+        return;
+      }
+      getSupabase().then((supabase) => {
+        supabase.from("wishes").insert({ from_name: wish.from, text }).then(async () => {
+          input.value = "";
+          const { data } = await supabase.from("wishes").select("*").order("created_at", { ascending: false }).limit(30);
+          render(data || []);
+          statusEl.textContent = "your wish is in the cloud ☁";
+          setTimeout(() => { statusEl.textContent = "etherwire lit — the cloud is drifting"; }, 2200);
+        });
+      });
+    };
+    sendBtn.addEventListener("click", send);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+
+    if (!LIVE) {
+      statusEl.textContent = "guest mode · wishes stay on this device";
+      render(store.get("vwc-wishes", []));
+      return;
+    }
+    statusEl.textContent = "reaching for the etherwire…";
+    getSupabase().then((supabase) => {
+      supabase.auth.signInAnonymously().then(async () => {
+        statusEl.textContent = "etherwire lit — the cloud is drifting";
+        const { data } = await supabase.from("wishes").select("*").order("created_at", { ascending: false }).limit(30);
+        render(data || []);
+        supabase.channel("wishes-live").on("postgres_changes", { event: "INSERT", schema: "public", table: "wishes" }, async () => {
+          const { data: d2 } = await supabase.from("wishes").select("*").order("created_at", { ascending: false }).limit(30);
+          render(d2 || []);
+        }).subscribe();
+      });
+    }).catch(() => { statusEl.textContent = "the etherwire is dark — the cloud waits."; });
+  }
+
+    /* ══════════ the bulletin board · everything new lands here ══════════ */
+  function ago(t) {
+    const s = Math.max(0, (Date.now() - t) / 1000);
+    if (s < 60) return "just now";
+    if (s < 3600) return Math.floor(s / 60) + "m ago";
+    if (s < 86400) return Math.floor(s / 3600) + "h ago";
+    return Math.floor(s / 86400) + "d ago";
+  }
+
+  function initBulletin() {
+    const feed = document.getElementById("bulletinFeed");
+    const checkinBtn = document.getElementById("checkinBtn");
+    const checkinInfo = document.getElementById("checkinInfo");
+    const wallBtn = document.getElementById("bulletinWallBtn");
+    if (wallBtn) wallBtn.addEventListener("click", () => { if (window.__openWall) window.__openWall(); });
+
+    const openBulletin = () => {
+      store.set("vwc-wall-seen", Date.now());
+      const notifyBtn = document.getElementById("notifyBtn");
+      const notifyCount = document.getElementById("notifyCount");
+      const msgCloud = document.getElementById("msgCloud");
+      const msgCount = document.getElementById("msgCount");
+      if (notifyBtn) { notifyBtn.classList.remove("glow"); notifyBtn.title = "no new messages"; if (notifyCount) notifyCount.hidden = true; }
+      if (msgCloud) { msgCloud.classList.remove("active"); if (msgCount) msgCount.hidden = true; }
+      setWin(document.getElementById("bulletinWin"), true);
+    };
+    window.__openBulletin = openBulletin;
+
+    const renderBulletin = (notes, isNew) => {
+      const me = displayName().toLowerCase();
+      const items = (notes || []).slice(0, 12);
+      feed.innerHTML = "";
+      if (!items.length) { feed.textContent = "the bulletin board is quiet — pin the first note on the wall."; return; }
+      for (const n of items) {
+        const div = document.createElement("div");
+        div.className = "bulletin-post" + (isNew ? " new" : "");
+        div.style.setProperty("--rrot", (Math.random() * 1.6 - 0.8).toFixed(2) + "deg");
+        const who = document.createElement("span");
+        who.className = "who";
+        who.textContent = n.from + ": ";
+        const txt = document.createElement("span");
+        txt.className = "txt";
+        txt.textContent = n.text;
+        const meta = document.createElement("span");
+        meta.className = "meta";
+        const t = n.created_at ? new Date(n.created_at).getTime() : (n.t || Date.now());
+        const to = n.to && n.to.toLowerCase() !== "anyone" ? n.to.toLowerCase() : null;
+        let label = ago(t);
+        if (to === me) label += " · for you";
+        else if (to) label += " · for " + to;
+        else label += " · public";
+        meta.textContent = label;
+        div.appendChild(who);
+        div.appendChild(txt);
+        div.appendChild(meta);
+        feed.appendChild(div);
+      }
+    };
+
+    const refresh = (isNew) => {
+      if (!LIVE) { renderBulletin(store.get("vwc-wall", []), isNew); return; }
+      getSupabase().then(async (supabase) => {
+        const { data } = await supabase.from("wall").select("*").order("created_at", { ascending: false }).limit(12);
+        renderBulletin(data || [], isNew);
+      }).catch(() => {});
+    };
+    document.addEventListener("vwc-wall-updated", () => refresh(true));
+
+    const myChecked = store.get("vwc-checkins", []);
+    const checkedToday = myChecked.includes(todayStr());
+    if (checkedToday) {
+      checkinBtn.classList.add("checked");
+      checkinBtn.textContent = "✓ you're here today";
+    }
+
+    if (!LIVE) {
+      checkinInfo.textContent = checkedToday ? "the guest book shows you here" : "no one has signed the book yet today";
+      checkinBtn.addEventListener("click", () => {
+        const list = store.get("vwc-checkins", []);
+        if (list.includes(todayStr())) return;
+        list.push(todayStr());
+        store.set("vwc-checkins", list.slice(-60));
+        checkinBtn.classList.add("checked");
+        checkinBtn.textContent = "✓ you're here today";
+        checkinInfo.textContent = "the guest book shows you here";
+      });
+      refresh(false);
+      return;
+    }
+
+    checkinInfo.textContent = "reaching for the etherwire…";
+    getSupabase().then((supabase) => {
+      supabase.auth.signInAnonymously().then(async () => {
+        const today = todayStr();
+        const countToday = async () => {
+          const { data } = await supabase.from("checkins").select("name").eq("day", today);
+          const c = data ? data.length : 0;
+          checkinInfo.textContent = c + (c === 1 ? " member" : " members") + " here today";
+          return c;
+        };
+        const c0 = await countToday();
+        if (checkedToday) checkinInfo.textContent = "you + " + Math.max(c0 - 1, 0) + " other" + (c0 - 1 === 1 ? "" : "s") + " here today";
+        const { data: mine } = await supabase.from("checkins").select("id").eq("day", today).eq("name", myName());
+        if (mine && mine.length) {
+          checkinBtn.classList.add("checked");
+          checkinBtn.textContent = "✓ you're here today";
+        }
+        checkinBtn.addEventListener("click", async () => {
+          if (checkinBtn.classList.contains("checked")) return;
+          await supabase.from("checkins").insert({ name: myName() });
+          checkinBtn.classList.add("checked");
+          checkinBtn.textContent = "✓ you're here today";
+          countToday();
+        });
+        supabase.channel("checkin-live").on("postgres_changes", { event: "INSERT", schema: "public", table: "checkins" }, countToday).subscribe();
+        refresh(false);
+        supabase.channel("bulletin-live").on("postgres_changes", { event: "INSERT", schema: "public", table: "wall" }, () => refresh(true)).subscribe();
+      });
+    }).catch(() => { checkinInfo.textContent = "the etherwire is dark — check in again later."; });
+  }
+
+/* ══════════ the daily bell + return streak ══════════ */
+  function initBell() {
+    const timeInput = document.getElementById("remindTime");
+    const btn = document.getElementById("remindBtn");
+    const info = document.getElementById("remindInfo");
+    const bell = store.get("vwc-bell", { on: false, hh: 20, mm: 0 });
+    const fmt = (hh, mm) => String(hh).padStart(2, "0") + ":" + String(mm).padStart(2, "0");
+
+    if (bell.on) {
+      timeInput.value = fmt(bell.hh, bell.mm);
+      btn.textContent = "ringing at " + fmt(bell.hh, bell.mm);
+      btn.classList.add("on");
+      scheduleBell(bell.hh, bell.mm, info);
+    } else {
+      info.textContent = "the bell is silent for now";
+    }
+
+    btn.addEventListener("click", async () => {
+      const cur = store.get("vwc-bell", { on: false, hh: 20, mm: 0 });
+      if (cur.on) {
+        store.set("vwc-bell", { on: false, hh: cur.hh, mm: cur.mm });
+        btn.textContent = "ring the bell";
+        btn.classList.remove("on");
+        info.textContent = "the bell is silent for now";
+        return;
+      }
+      if ("Notification" in window && Notification.permission === "default") {
+        try { await Notification.requestPermission(); } catch (err) { }
+      }
+      if (!bellCtx) unlockAudio();
+      const parts = timeInput.value.split(":").map(Number);
+      const hh = parts[0] || 20, mm = parts[1] || 0;
+      store.set("vwc-bell", { on: true, hh, mm });
+      btn.textContent = "ringing at " + fmt(hh, mm);
+      btn.classList.add("on");
+      scheduleBell(hh, mm, info);
+    });
+  }
+
+  function scheduleBell(hh, mm, infoEl) {
+    const now = new Date();
+    const target = new Date(now);
+    target.setHours(hh, mm, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1);
+    const wait = target - now;
+    const update = () => {
+      if (infoEl) infoEl.textContent = "next ring: " + target.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    };
+    update();
+    setTimeout(() => {
+      fireBell();
+      /* hold the "just rang" message a while before showing tomorrow's time */
+      setTimeout(() => scheduleBell(hh, mm, infoEl), 20000);
+    }, wait);
+  }
+
+  function fireBell() {
+    try { chime(); } catch (err) { }
+    try {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("The Violet Web Café ☾", { body: "The chimeras are waiting for you by the fire." });
+      }
+    } catch (err) { }
+    const info = document.getElementById("remindInfo");
+    if (info) info.textContent = "the bell just rang — welcome back ☾";
+  }
+
+  let audioCtx = null;
+  function unlockAudio() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+  }
+  window.addEventListener("pointerdown", unlockAudio, { passive: true });
+  window.addEventListener("keydown", unlockAudio, { passive: true });
+
+  function chime() {
+    unlockAudio();
+    if (!audioCtx) return;
+    const ctx = audioCtx;
+    const t = ctx.currentTime;
+    [880, 659.25, 987.77].forEach((f, i) => {
+      const o = ctx.createOscillator();
+      o.type = "sine";
+      o.frequency.value = f;
+      const g = ctx.createGain();
+      const t0 = t + i * 0.3;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.22, t0 + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.6);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start(t0);
+      o.stop(t0 + 1.7);
+    });
+  }
+
+
+  function initStreak() {
+    const el = document.getElementById("streakEl");
+    const visits = store.get("vwc-visits", []);
+    if (!visits.includes(todayStr())) {
+      visits.push(todayStr());
+      store.set("vwc-visits", visits.slice(-400));
+    }
+    let streak = 1;
+    const d = new Date();
+    for (let i = 1; i < 400; i++) {
+      const prev = new Date(d);
+      prev.setDate(d.getDate() - i);
+      if (visits.includes(todayStr(prev))) streak++;
+      else break;
+    }
+    el.textContent = streak > 1
+      ? "you've come back " + streak + " days in a row — the web is glad of it ☾"
+      : "a fresh visit — come back tomorrow and start a thread of days";
+  }
+
+  function registerPWA() {
+    try {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(() => { /* no sw here — that's fine */ });
+      }
+    } catch (err) { }
+  }
+
+  /* ───────────── 11 · begin ═ the spider spins ═──────────── */
+  initIntro();
+  runLoader();
+  initCornerWeb();
+  makeDraggable(document.getElementById("wishCloud"), "wishCloud");
+  makeDraggable(document.getElementById("msgCloud"), "msgCloud");
+})();
+
+</script>
+</body>
+</html>
