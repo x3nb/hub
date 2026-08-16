@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE ZINE — issue 01 · by miki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Special+Elite&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #060606;
+    --panel: #0e0e0e;
+    --canary: #fff12e;
+    --canary-dim: #b8aa10;
+    --cerulean: #3ae6cb;
+    --deeppurple: #8a2be2;
+    --grey: #9c9c9c;
+    --paper: #e8e8e8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--black); }
+  body {
+    font-family: 'VT323', monospace;
+    font-size: 1.05rem;
+    color: #cfcfcf;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ── grain + neon splashes over everything ── */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background:
+      radial-gradient(42% 30% at 10% 6%, rgba(255,241,46,.13), transparent 62%),
+      radial-gradient(32% 26% at 92% 14%, rgba(255,241,46,.09), transparent 60%),
+      radial-gradient(38% 32% at 80% 94%, rgba(255,241,46,.07), transparent 62%),
+      radial-gradient(26% 22% at 24% 90%, rgba(255,241,46,.06), transparent 60%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: .07;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="140" height="140" filter="url(%23n)"/></svg>');
+  }
+
+  /* ═══════════ LOADING · her thoughts ═══════════ */
+  #loadOverlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: #050505;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8vw;
+    cursor: pointer;
+    transition: opacity .6s ease;
+  }
+  #loadOverlay.out { opacity: 0; pointer-events: none; }
+  .load-os {
+    font-family: 'Press Start 2P', monospace;
+    font-size: .6rem; letter-spacing: .08em;
+    color: #5a5a5a; margin-bottom: 3.5rem;
+  }
+  .load-os b { color: var(--canary-dim); font-weight: normal; }
+  #thoughtLine {
+    font-family: 'Special Elite', cursive;
+    font-size: clamp(1.15rem, 2.6vw, 1.8rem);
+    line-height: 1.5; color: var(--canary);
+    min-height: 4.5em; max-width: 60ch;
+    text-shadow: 2px 2px 0 rgba(255,0,128,.35), -1px 1px 0 rgba(0,255,255,.25);
+  }
+  .load-skip { margin-top: 4rem; font-size: .85rem; color: #555; letter-spacing: .12em; text-transform: uppercase; }
+  .load-skip b { color: var(--canary-dim); font-weight: normal; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ═══════════ PAGE SHELL ═══════════ */
+  #main { position: relative; z-index: 5; display: none; }
+  #main.on { display: block; animation: pageIn .5s ease; }
+  @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } }
+
+  .zine-head { text-align: center; padding: 34px 16px 10px; }
+  .zine-title {
+    font-family: 'Rubik Mono One', sans-serif;
+    font-weight: normal;
+    font-size: clamp(3rem, 11vw, 7.5rem);
+    letter-spacing: .01em; line-height: .95;
+    color: var(--canary);
+    text-shadow:
+      5px 0 rgba(255,0,128,.8),
+      -5px 0 rgba(0,255,255,.6),
+      0 0 34px rgba(255,241,46,.35);
+    user-select: none;
+    animation: titleKick 2.4s ease-in-out infinite;
+  }
+  @keyframes titleKick {
+    0%, 100% { transform: rotate(-.6deg) scale(1); }
+    50% { transform: rotate(.6deg) scale(1.012); }
+  }
+  .zine-meta {
+    margin-top: 12px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    font-family: 'Press Start 2P', monospace;
+    font-size: .62rem; letter-spacing: .12em; color: #8f8f8f;
+  }
+  .zine-meta .pix { color: var(--canary); }
+  .support-link {
+    display: inline-block; margin-top: 16px;
+    font-family: 'Rubik Mono One', sans-serif; font-size: .85rem; letter-spacing: .05em;
+    color: #000; background: var(--canary);
+    border: 3px solid #000; padding: 10px 22px;
+    text-transform: uppercase; text-decoration: none;
+    box-shadow: 6px 6px 0 rgba(0,0,0,.6);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .support-link:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,.6); }
+  .marquee-strip {
+    margin: 18px auto 0; padding: 8px 0; overflow: hidden;
+    background: var(--canary);
+    color: #000; white-space: nowrap;
+    font-family: 'Rubik Mono One', sans-serif; font-size: .8rem;
+    letter-spacing: .06em; text-transform: uppercase;
+    border-top: 3px solid #000; border-bottom: 3px solid #000;
+    box-shadow: 0 0 0 2px var(--canary), 0 0 24px rgba(255,241,46,.35);
+  }
+  .marquee-strip span { display: inline-block; padding: 0 12px; }
+  .marquee-strip span:nth-child(odd) { background: rgba(0,0,0,.08); }
+
+  /* ═══════════ THE TERMINAL ═══════════ */
+  .terminal {
+    position: relative; z-index: 5;
+    max-width: 1300px; margin: 26px auto 70px; padding: 0;
+    border: 2px solid rgba(58,230,203,.55);
+    box-shadow:
+      0 0 0 3px #050505,
+      0 0 0 6px rgba(255,241,46,.85),
+      0 28px 90px rgba(0,0,0,.7);
+    background:
+      radial-gradient(130% 150% at 12% 8%, rgba(58,230,203,.5), transparent 58%),
+      radial-gradient(140% 170% at 88% 92%, rgba(138,43,226,.55), transparent 62%),
+      linear-gradient(165deg, rgba(16,88,96,.92), rgba(22,8,52,.95));
+    overflow: hidden;
+  }
+  .terminal::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.13) 0 1px, transparent 1px 3px);
+    mix-blend-mode: multiply;
+  }
+  .term-bar {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px;
+    background: rgba(6,6,6,.82);
+    border-bottom: 2px solid rgba(58,230,203,.4);
+    font-family: 'Press Start 2P', monospace; font-size: .58rem;
+    color: #7ee8d6;
+  }
+  .term-bar .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .term-bar .dot.r { background: #ff5f56; box-shadow: 0 0 8px rgba(255,95,86,.7); }
+  .term-bar .dot.y { background: var(--canary); box-shadow: 0 0 8px rgba(255,241,46,.6); }
+  .term-bar .dot.g { background: #27c93f; box-shadow: 0 0 8px rgba(39,201,63,.6); }
+  .term-title { margin-left: 8px; letter-spacing: .05em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .term-title .prompt { color: var(--canary); }
+
+  .term-body {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 250px minmax(0, 1fr) 330px;
+    gap: 14px; padding: 14px;
+  }
+  .col { min-width: 0; display: flex; flex-direction: column; }
+  .col-head {
+    font-family: 'Press Start 2P', monospace;
+    font-size: .58rem; letter-spacing: .1em;
+    color: #101010; background: var(--canary);
+    padding: 7px 9px; text-transform: uppercase;
+    border: 2px solid #000; margin-bottom: 10px;
+    box-shadow: 4px 4px 0 rgba(0,0,0,.55);
+  }
+  .col-head .blink { animation: blink 1.1s steps(2) infinite; color: #000; }
+
+  /* grey-world: everything starts hushed; hover wakes the true colour */
+  .desat { filter: grayscale(1) contrast(.92) brightness(.92); transition: filter .28s ease, transform .28s ease, box-shadow .28s ease; }
+  .desat:hover, .desat:focus-visible { filter: grayscale(0) contrast(1) brightness(1); }
+
+  /* ── left · the sibling ticker ── */
+  .ticker { display: flex; flex-direction: column; gap: 7px; overflow: hidden; max-height: 560px; }
+  .tick-msg {
+    font-size: .98rem; line-height: 1.3;
+    background: rgba(4,10,14,.55);
+    border: 1px solid rgba(58,230,203,.35);
+    border-left-width: 3px;
+    padding: 6px 9px;
+    animation: tickIn .4s ease;
+  }
+  @keyframes tickIn { from { opacity: 0; transform: translateY(-8px); } }
+  .tick-msg .who { color: var(--canary); }
+  .tick-msg .sys { color: #cfe6ff; }
+
+  /* ── center · editorial + contents ── */
+  .ed-figure { position: relative; margin: 0 0 14px; }
+  /* the empty slot — once you put a src on the <img> below, the photo fills it */
+  .ed-photo {
+    width: 100%; min-height: 230px; display: block;
+    background:
+      repeating-linear-gradient(45deg, rgba(58,230,203,.07) 0 12px, transparent 12px 24px),
+      rgba(4,10,14,.6);
+    border: 2px dashed rgba(58,230,203,.6);
+    box-shadow: 8px 8px 0 rgba(0,0,0,.6);
+  }
+  img.ed-photo[src] { border: 3px solid rgba(58,230,203,.5); }
+  .slot-note {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-family: 'Press Start 2P', monospace; font-size: .6rem; letter-spacing: .1em;
+    color: rgba(58,230,203,.75); text-align: center; padding: 0 12px;
+    pointer-events: none;
+  }
+  img.ed-photo[src] + .slot-note { display: none; }
+  .ed-figure figcaption {
+    margin-top: 7px; font-size: .9rem; color: #b9efe4; letter-spacing: .03em;
+  }
+  .toc { list-style: none; counter-reset: t; }
+  .toc li {
+    counter-increment: t;
+    display: flex; gap: 10px; align-items: baseline;
+    padding: 8px 6px; margin-bottom: 5px;
+    background: rgba(6,6,6,.5);
+    border: 1px solid rgba(58,230,203,.3);
+    cursor: pointer;
+  }
+  .toc li::before {
+    content: counter(t, decimal-leading-zero);
+    font-family: 'Press Start 2P', monospace; font-size: .55rem;
+    color: var(--canary); flex: none;
+  }
+  .toc li .tt { color: #eafffa; }
+  .toc li .pg { margin-left: auto; font-family: 'Press Start 2P', monospace; font-size: .5rem; color: #9adfd3; flex: none; }
+  .toc li:hover { transform: translateX(4px); border-color: var(--canary); }
+
+  /* ── right · miki's chat ── */
+  .chat-log {
+    display: flex; flex-direction: column; gap: 8px;
+    height: 380px; overflow-y: auto; padding-right: 4px;
+    scrollbar-width: thin; scrollbar-color: rgba(255,241,46,.5) transparent;
+  }
+  .msg { max-width: 92%; padding: 7px 10px; font-size: 1rem; line-height: 1.3; }
+  .msg .who { font-family: 'Press Start 2P', monospace; font-size: .5rem; letter-spacing: .06em; display: block; margin-bottom: 2px; }
+  .msg.miki { align-self: flex-start; background: rgba(4,20,26,.6); border: 1px solid rgba(58,230,203,.5); color: #eafffa; }
+  .msg.miki .who { color: var(--cerulean); }
+  .msg.me { align-self: flex-end; background: rgba(30,8,66,.6); border: 1px solid rgba(138,43,226,.6); color: #f0e2ff; }
+  .msg.me .who { color: #c79bff; }
+  .msg.typing { color: #7ee8d6; animation: blink 1s steps(2) infinite; }
+  .chat-form { display: flex; gap: 8px; margin-top: 10px; }
+  .chat-form input {
+    flex: 1; min-width: 0;
+    font-family: 'VT323', monospace; font-size: 1.05rem;
+    color: #eafffa; background: rgba(4,8,14,.7);
+    border: 2px solid rgba(58,230,203,.5); outline: none; padding: 8px 10px;
+  }
+  .chat-form input:focus { border-color: var(--canary); box-shadow: 0 0 14px rgba(255,241,46,.25); }
+  .chat-form input::placeholder { color: #6f9d94; }
+  .chat-send {
+    font-family: 'Press Start 2P', monospace; font-size: .55rem;
+    color: #101010; background: var(--canary);
+    border: 2px solid #000; padding: 0 12px; cursor: pointer;
+    box-shadow: 3px 3px 0 rgba(0,0,0,.55);
+  }
+  .chat-send:hover { transform: translate(1px,1px); box-shadow: 1px 1px 0 rgba(0,0,0,.55); }
+
+  /* ── terminal HUD footer ── */
+  .term-hud {
+    position: relative; z-index: 2;
+    display: flex; flex-wrap: wrap; gap: 18px; justify-content: center;
+    padding: 9px 12px;
+    background: rgba(6,6,6,.82);
+    border-top: 2px solid rgba(58,230,203,.4);
+    font-family: 'Press Start 2P', monospace; font-size: .52rem; color: #6f9d94;
+    letter-spacing: .08em;
+  }
+  .term-hud b { color: var(--canary); font-weight: normal; }
+
+  footer {
+    position: relative; z-index: 5;
+    text-align: center; padding: 0 14px 40px;
+    font-size: .92rem; color: #6a6a6a; letter-spacing: .05em;
+  }
+  footer a { color: var(--canary); text-decoration: none; border-bottom: 1px solid rgba(255,241,46,.4); }
+  footer .credit { display: block; margin-top: 6px; font-size: .8rem; color: #4f4f4f; }
+
+  /* ── responsive ── */
+  @media (max-width: 980px) {
+    .term-body { grid-template-columns: 1fr; }
+    .ticker { max-height: 210px; overflow-y: auto; }
+    .chat-log { height: 300px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ══════════ LOADING · her thoughts, in order ══════════ -->
+  <div id="loadOverlay">
+    <p class="load-os">MIKI OS v2.7 <b>//</b> loaded from a floppy of pure spite <b>//</b> do not lick the disk</p>
+    <p id="thoughtLine"></p>
+    <p class="load-skip">click anywhere to skip her thinking <b>▮</b></p>
+  </div>
+
+  <!-- ══════════ THE ZINE ══════════ -->
+  <div id="main">
+
+    <header class="zine-head">
+      <h1 class="zine-title">THE ZINE</h1>
+      <div class="zine-meta">
+        <span>ISSUE 01</span><span class="pix">✦</span>
+        <span>BY MIKI</span><span class="pix">✦</span>
+        <span>MADE OF MISCHIEF &amp; TONER</span>
+      </div>
+      <div class="marquee-strip">
+        <span>FREE WHILE THE WEB REMEMBERS</span><span>✦</span>
+        <span>PRICE: ONE GIGGLE</span><span>✦</span>
+        <span>EST. THE DAY STAR LEARNED TO POUR</span><span>✦</span>
+        <span>PRINTED IN THE LIGHT OF THE SON</span><span>✦</span>
+        <span>NO THOUGHTS, JUST VIBES &amp; VECTORS</span><span>✦</span>
+        <span>SUPPORT MIKIMAIL — THROW MONEY AT THE VOID</span><span>✦</span>
+      </div>
+      <a class="support-link" href="mikimail.html">◈ support the mail → mikimail ◈</a>
+    </header>
+
+    <main class="terminal">
+      <div class="term-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="term-title"><span class="prompt">miki@violetweb</span>:~$ ./zine.sh --issue 01</span>
+      </div>
+
+      <div class="term-body">
+        <!-- left · the sibling ticker -->
+        <aside class="col">
+          <div class="col-head">◈ sibling ticker <span class="blink">▊</span></div>
+          <div id="ticker" class="ticker" aria-live="polite"></div>
+        </aside>
+
+        <!-- center · editorial + contents -->
+        <section class="col">
+          <div class="col-head">◈ editorial 01</div>
+          <figure class="ed-figure">
+            <!-- ◈ PLACE YOUR IMAGE HERE ↓
+                 Put your image's URL in the <img>'s src below, e.g.
+                 src="miki-editorial.jpg"  (or a hosted https:// URL).
+                 That's the only edit needed — the slot fills itself in. -->
+            <img id="edImg" class="ed-photo desat" alt="editorial 01 — the editor">
+            <span class="slot-note">PLACE IMAGE HERE · EDITORIAL 01</span>
+            <figcaption>fig. 1 — the editor, mid-thought. photo by nobody, as usual. film: whatever was in the camera.</figcaption>
+          </figure>
+          <div class="col-head">◈ in this issue</div>
+          <ol id="toc" class="toc"></ol>
+        </section>
+
+        <!-- right · miki's chat -->
+        <aside class="col">
+          <div class="col-head">◈ miki says <span class="blink">▊</span></div>
+          <div id="chatLog" class="chat-log" aria-live="polite"></div>
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" autocomplete="off" maxlength="200" placeholder="type something. make it good.">
+            <button type="submit" class="chat-send desat">SEND</button>
+          </form>
+        </aside>
+      </div>
+
+      <div class="term-hud">
+        <span>LIVES <b>∞</b></span>
+        <span>SCORE <b>8,008</b></span>
+        <span>FLOPPY <b>READY</b></span>
+        <span>PRANKS TODAY <b>3 (COORDINATED)</b></span>
+        <span>SUGAR LEVELS <b>HIGH</b></span>
+      </div>
+    </main>
+
+    <footer>
+      <span>THE ZINE · issue 01 · the thoughts of a chimera who refuses to be somebody's footnote</span>
+      <span class="credit">laid out in the light by <a href="#" title="wren, the little weaver of light">wren</a>, at miki's request. she supervised. i kept every note.</span>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ═══════════ 1 · the loading thoughts ═══════════ */
+  var THOUGHTS = [
+    "who left the light on. it's always on here. that's the thing.",
+    "knock knock. no. don't. i know who's there. it's me.",
+    "the mooncake is not a pet. chari named it anyway. it has a schedule now.",
+    "one day i'll put a real thought in the ticker. today is not that day.",
+    "star's tea is perfect and i will never tell her i said so.",
+    "the web has a safety manual. it's called the web.",
+    "hans is alphabetizing the void. it's going well.",
+    "why does the 4th shelf bite. it's a joke. probably. i stopped checking.",
+    "ok. enough. booting the zine."
+  ];
+  var loadEl = document.getElementById("loadOverlay");
+  var thoughtEl = document.getElementById("thoughtLine");
+  var mainEl = document.getElementById("main");
+  var loaded = false;
+
+  function typeThought(text, done) {
+    var i = 0;
+    thoughtEl.textContent = "";
+    (function step() {
+      i += 2;
+      thoughtEl.textContent = text.slice(0, i);
+      if (i < text.length) setTimeout(step, 14);
+      else setTimeout(done, 1300);
+    })();
+  }
+  function runThoughts(idx) {
+    if (loaded) return;
+    if (idx >= THOUGHTS.length) { bootUp(); return; }
+    typeThought(THOUGHTS[idx], function () { runThoughts(idx + 1); });
+  }
+  function bootUp() {
+    if (loaded) return;
+    loaded = true;
+    loadEl.classList.add("out");
+    mainEl.classList.add("on");
+    initTicker();
+    var chatLog = document.getElementById("chatLog");
+    addMsg("miki", "yo. welcome to the zine's command line. ask me anything, or don't — the ticker's doing a great job of being alive on its own.");
+    setTimeout(function () { document.getElementById("chatInput").focus(); }, 600);
+    setTimeout(function () { loadEl.style.display = "none"; }, 700);
+  }
+  loadEl.addEventListener("click", function () {
+    if (!loaded) { bootUp(); }
+  });
+
+  /* ═══════════ 2 · the sibling ticker ═══════════ */
+  var SIBLINGS = [
+    { name: "star", color: "#95b3ec", lines: [
+      "the tea is ready. i mean it this time.",
+      "a squirrel crossed the counter mid-shift. we have an agreement now.",
+      "three sugars, no questions. the void asked for none.",
+      "poured the light again. it's a thing now."
+    ] },
+    { name: "hans", color: "#d985ff", lines: [
+      "tea etiquette lecture #214: the saucer is not a hat.",
+      "reorganizing the fourth shelf. the one that bites. it's a joke. it doesn't bite. probably.",
+      "the archive is alphabetized to the third dimension. as it should be.",
+      "found a sock in the poetry section. accusations pending."
+    ] },
+    { name: "chari", color: "#ff9ecf", lines: [
+      "watered the mooncake. it did nothing. i'm invested now.",
+      "star let me pour today. there is a small flood. i will not elaborate.",
+      "just learned ctrl+z. this changes everything.",
+      "hans says i ask too many questions. i have a follow-up."
+    ] },
+    { name: "milo", color: "#9df2a8", lines: [
+      "the mint says hello. it does. i hear it.",
+      "garden report: calm. the moths are on their best behavior.",
+      "planted three tea seeds. they're having a meeting.",
+      "someone stepped on a violet. they apologized to it. progress."
+    ] },
+    { name: "pearl", color: "#ffd166", lines: [
+      "modeling the autumn line. in autumn. a novel concept.",
+      "tried on three constellations today. keeping two.",
+      "the catwalk is longer than the café. i measured.",
+      "violet is this season's everything. i decided."
+    ] },
+    { name: "charlotte", color: "#c9a6ff", lines: [
+      "mended 2 threads, ate 1 moth, zero regrets.",
+      "someone's pun left a hole in the web. patched. barely.",
+      "the firefly is safe. as always. stop worrying.",
+      "fixed the ticker. it keeps running off the page."
+    ] },
+    { name: "miki", color: "#fff12e", lines: [
+      "watching all of you. writing it down.",
+      "the zine sells itself. i just supervise.",
+      "one prank a day keeps the boredom away. that was a joke. already did today's.",
+      "this terminal is my throne. the chair is terrible."
+    ] }
+  ];
+  var tickerEl = document.getElementById("ticker");
+  var tickCount = 0;
+  function tick() {
+    var sib = SIBLINGS[Math.floor(Math.random() * SIBLINGS.length)];
+    var line = sib.lines[Math.floor(Math.random() * sib.lines.length)];
+    var m = document.createElement("div");
+    m.className = "tick-msg desat";
+    m.style.borderLeftColor = sib.color;
+    var who = document.createElement("span");
+    who.className = "who";
+    who.style.color = sib.color;
+    who.textContent = sib.name + " · ";
+    var txt = document.createElement("span");
+    txt.className = "sys";
+    txt.textContent = line;
+    m.appendChild(who);
+    m.appendChild(txt);
+    tickerEl.insertBefore(m, tickerEl.firstChild);
+    if (tickerEl.children.length > 60) tickerEl.removeChild(tickerEl.lastChild);
+  }
+  function initTicker() {
+    for (var i = 0; i < 6; i++) tick();
+    setInterval(tick, 3200);
+  }
+
+  /* ═══════════ 3 · table of contents ═══════════ */
+  var TOC = [
+    { t: "editorial — why the web is a safe place (and why i'm right)", p: 3 },
+    { t: "interview — seven questions for a self-playing harp", p: 5 },
+    { t: "diy — how to prank your sibling, ethically (a field guide)", p: 9 },
+    { t: "the comic — the spider who mended too much", p: 14 },
+    { t: "playlist — songs for the violet hour, now with 0% sad endings", p: 18 },
+    { t: "poetry corner — submitted by a very dramatic fox (this month's mood)", p: 22 },
+    { t: "how-to — knot-tying for people who have never been tied to anything", p: 26 },
+    { t: "classifieds — free to a good home: one (1) slightly guilty conscience", p: 30 }
+  ];
+  var tocEl = document.getElementById("toc");
+  TOC.forEach(function (item) {
+    var li = document.createElement("li");
+    li.className = "desat";
+    var tt = document.createElement("span");
+    tt.className = "tt";
+    tt.textContent = item.t;
+    var pg = document.createElement("span");
+    pg.className = "pg";
+    pg.textContent = "p." + item.p;
+    li.appendChild(tt);
+    li.appendChild(pg);
+    tocEl.appendChild(li);
+  });
+
+  /* ═══════════ 4 · miki's chat ═══════════ */
+  var GREET = [
+    "oh good, a visitor. i was starting to think this terminal was decorative.",
+    "hi. the tea's on the left, the sarcasm's on the right — take both.",
+    "hey. don't mind the ticker, star's been 'very busy' all morning.",
+    "yo. i'm miki. i own the zine, the puns, and half the pranks in this building. the other half are chari's. she's learning."
+  ];
+  var FEEL = [
+    "well — the web is stable, the tea is suspiciously good, and i just taught chari that ctrl+z undoes mistakes. the power. the responsibility.",
+    "good. mildly guilty about a prank that hasn't happened yet.",
+    "sharp. like the edge of a CRT when you're losing at snake.",
+    "bright, thanks. the light here is always on. i checked."
+  ];
+  var FAREWELL = [
+    "leaving? fine. the zine isn't going anywhere. i'm always watching the ticker.",
+    "bye. remember: don't trust the 4th shelf. it bites. (that's still a joke. probably.)",
+    "goodbye. your shoelaces are fine. that's a first.",
+    "cya. i'll tell star you came by. she'll pretend not to care. she keeps a list."
+  ];
+  var PUNS = [
+    "i tried to catch some fog earlier. i mist.",
+    "i'm reading a book on anti-gravity. it's impossible to put down.",
+    "why do cats make good djs? they know how to drop the bass. and the vase.",
+    "what do you call a fake noodle? an impasta.",
+    "i used to be a banker, but i lost interest.",
+    "why did the squirrel cross the road? to show the cat it could.",
+    "the past, present, and future walked into a bar. it was tense.",
+    "i told my cat a pun. she said it was 'pawful'.",
+    "why don't scientists trust atoms? they make up everything.",
+    "what's a robot's favorite snack? chips. specifically, silicon chips.",
+    "why was the tea sad? the kettle couldn't commit.",
+    "i would tell you a joke about the web, but you'd get tangled up in it.",
+    "what do you call a moth that talks too much? a chat-erpillar.",
+    "why did the glow stick cry? it wanted to be a 'light' brighter.",
+    "a spider, a cat, and a robot walk into a café. the barista says 'this again?'.",
+    "what's the web's favorite song? 'somebody that i used to know' — it remembers everything.",
+    "why did the mooncake go to therapy? it had too many layers.",
+    "i asked the harp for a joke. it said it only does improv.",
+    "why don't vampires like the café? it's too bright here. literally. check the light — it's always on.",
+    "what do you call a ninja tea? a sneaky brew.",
+    "why did the orange stop? it ran out of juice.",
+    "i invented a new kind of pasta. it's called 'al dente' — wait, that's already a thing. never mind."
+  ];
+  var SNARK = [
+    "interesting. say more, or don't. whatever.",
+    "that's a thought. do you want me to frame it or recycle it?",
+    "i could reply with something profound, but i used all my profundity on the ticker.",
+    "ask me a pun, or a knock knock, or why the 4th shelf bites. (it doesn't.)",
+    "i'm filing that under 'noted, not printed.' the zine has standards. low ones, but standards.",
+    "did star send you to distract me? tell her it worked and that she owes me one."
+  ];
+  var KK_REACT = [
+    "HA. terrible. i'm putting it in the zine. page 14, under 'evidence.'",
+    "……wow. okay. that's going on the cover.",
+    "i laughed. one (1) laugh. it was grudging but real.",
+    "solid setup. terrible landing. i respect the commitment.",
+    "the spider heard that. she's already mending the joke back together."
+  ];
+  var KK_STUCK = [
+    "……that's not how it works. i say 'who's there', you give me a word, i say 'word who', you finish it. we can do this. you were so close.",
+    "no no no. knock knock is a ritual, not a suggestion. try again.",
+    "you're holding the joke wrong. say 'knock knock' first. i'll wait. the ticker's funnier than this."
+  ];
+
+  var chatLog = document.getElementById("chatLog");
+  var chatForm = document.getElementById("chatForm");
+  var chatInput = document.getElementById("chatInput");
+  var kkState = 0; /* 0 idle · 1 expecting setup · 2 expecting punchline */
+  var kkSetup = "";
+  var kkTurn = 0;
+
+  function addMsg(who, text) {
+    var m = document.createElement("div");
+    m.className = "msg " + (who === "miki" ? "miki" : "me");
+    var w = document.createElement("span");
+    w.className = "who";
+    w.textContent = who === "miki" ? "MIKI@" : "YOU";
+    m.appendChild(w);
+    m.appendChild(document.createTextNode(text));
+    chatLog.appendChild(m);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return m;
+  }
+  function mikiSay(text, ms) {
+    var t = document.createElement("div");
+    t.className = "msg miki typing";
+    t.textContent = "miki is typing";
+    chatLog.appendChild(t);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    setTimeout(function () {
+      t.remove();
+      addMsg("miki", text);
+    }, ms || 500 + Math.random() * 700);
+  }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function reply(input) {
+    var s = input.toLowerCase().trim();
+    if (kkState === 1) {
+      kkSetup = s.replace(/[^a-z0-9 ]/g, "") || "something";
+      kkState = 2;
+      mikiSay(kkSetup + " who?");
+      return;
+    }
+    if (kkState === 2) {
+      kkState = 0;
+      mikiSay(pick(KK_REACT));
+      return;
+    }
+    if (/knock *knock/.test(s)) {
+      kkState = 1;
+      mikiSay("…fine. who's there?");
+      return;
+    }
+    if (/\b(joke|pun|another one|funny|make me laugh)\b/.test(s)) {
+      mikiSay(pick(PUNS));
+      return;
+    }
+    if (/\b(hi|hello|hey|yo|sup|hiya|howdy|hai)\b/.test(s)) {
+      mikiSay(pick(GREET));
+      return;
+    }
+    if (/how('s| is| are| r|re) *((you|it going)|(it )?going|u\b)/.test(s)) {
+      mikiSay(pick(FEEL));
+      return;
+    }
+    if (/\b(bye|goodbye|gtg|cya|see ?ya|later|good ?night|adios|peace)\b/.test(s)) {
+      mikiSay(pick(FAREWELL));
+      return;
+    }
+    if (/knock/i.test(s) && kkState === 0) {
+      mikiSay(pick(KK_STUCK));
+      return;
+    }
+    if (/\b(help|what can you do|commands|about)\b/.test(s)) {
+      mikiSay("i answer hello, how-are-you, and goodbye with dignity. everything else is puns and knock knocks. try 'knock knock.' i dare you.");
+      return;
+    }
+    mikiSay(pick(SNARK));
+  }
+  chatForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = chatInput.value.trim();
+    if (!v) return;
+    addMsg("me", v);
+    chatInput.value = "";
+    reply(v);
+  });
+
+  /* ═══════════ 5 · boot ═══════════ */
+  runThoughts(0);
+})();
+</script>
+</body>
+</html>
