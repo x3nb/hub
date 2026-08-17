@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIKIMAIL — you're on the list</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Special+Elite&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root { --black: #060606; --canary: #fff12e; --canary-dim: #b8aa10; --cerulean: #3ae6cb; --deeppurple: #8a2be2; --grey: #9c9c9c; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'VT323', monospace; font-size: 1.05rem; color: #cfcfcf; background: var(--black); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background:
+    radial-gradient(42% 30% at 10% 6%, rgba(255,241,46,.13), transparent 62%),
+    radial-gradient(32% 26% at 92% 14%, rgba(255,241,46,.09), transparent 60%),
+    radial-gradient(38% 32% at 80% 94%, rgba(255,241,46,.07), transparent 62%); }
+  .card {
+    position: relative; z-index: 1; max-width: 620px; width: 100%;
+    background: rgba(4,10,14,.72); border: 2px solid rgba(58,230,203,.55);
+    box-shadow: 0 0 0 3px #050505, 0 0 0 6px rgba(255,241,46,.85), 0 28px 90px rgba(0,0,0,.7);
+    padding: 40px 34px 34px; text-align: center;
+  }
+  .stamp {
+    display: inline-block; font-family: 'Press Start 2P', monospace; font-size: .55rem;
+    color: var(--black); background: var(--canary); border: 2px solid #000;
+    padding: 6px 10px; transform: rotate(-2deg); text-transform: uppercase; letter-spacing: .08em;
+    box-shadow: 3px 3px 0 rgba(0,0,0,.6);
+  }
+  h1 {
+    margin-top: 22px; font-family: 'Rubik Mono One', sans-serif; font-weight: normal;
+    font-size: clamp(1.8rem, 6vw, 3.4rem); line-height: 1.05; color: var(--canary);
+    text-shadow: 4px 0 rgba(255,0,128,.7), -4px 0 rgba(0,255,255,.55), 0 0 26px rgba(255,241,46,.35);
+  }
+  .sub { margin-top: 10px; font-family: 'Special Elite', cursive; font-size: 1.15rem; color: #eafffa; }
+  .sub b { color: var(--cerulean); font-weight: normal; }
+  .steps { margin: 26px 0 4px; text-align: left; list-style: none; }
+  .steps li { padding: 8px 0 8px 26px; position: relative; font-size: 1.05rem; line-height: 1.35; color: #eafffa; border-top: 1px dashed rgba(58,230,203,.3); }
+  .steps li:first-child { border-top: none; }
+  .steps li::before { content: "◈"; position: absolute; left: 4px; color: var(--deeppurple); }
+  .steps li b { color: var(--canary); font-weight: normal; }
+  .warn { margin-top: 18px; font-size: .92rem; line-height: 1.5; color: #8a8a8a; }
+  .warn b { color: #7ee8d6; font-weight: normal; }
+  .links { margin-top: 22px; font-family: 'Press Start 2P', monospace; font-size: .5rem; letter-spacing: .05em; text-transform: uppercase; }
+  .links a { color: var(--canary); text-decoration: none; border-bottom: 1px solid rgba(255,241,46,.4); margin: 0 6px; }
+  .links a:hover { color: #fff; }
+  footer { margin-top: 26px; font-family: 'VT323', monospace; font-size: .75rem; color: #5a5a5a; line-height: 1.6; }
+  footer .fineprint { display: block; margin-top: 8px; font-size: .66rem; color: #3c3c3c; letter-spacing: .03em; }
+  footer a { color: var(--canary-dim); text-decoration: none; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <span class="stamp">list confirmed</span>
+    <h1>you're on the list.</h1>
+    <p class="sub">the future of mail says <b>hi</b>.</p>
+
+    <ul class="steps">
+      <li><b>one (1) last step:</b> open the confirmation email we just sent and click the link in it. that's the door opening.</li>
+      <li>once confirmed, your name goes on the <b>founding members screen</b>, in order of trust. you are currently very high.</li>
+      <li>the moment the real mailbox opens, <b>exactly one (1) carrier pigeon</b> will find you.</li>
+      <li>until then: nothing else. no spam, no weekly roundups, no boats. the drawer stays closed. don't ask about the drawer.</li>
+    </ul>
+
+    <p class="warn">if the confirmation email didn't arrive, check the spam folder — <b>the spider apologizes for the moths living there</b>. and if you ever want off the list, one click and you're free: the drawer stays open, but the door does too.</p>
+
+    <p class="links"><a href="mikimail-app.html">the mail itself</a> · <a href="miki-zine.html">THE ZINE</a> · <a href="mikimail.html">fundraiser</a></p>
+
+    <footer>
+      — miki, who is watching. <a href="#">affectionately</a>.
+      <span class="fineprint">© <span id="yr"></span> the keeper of the violet web · thank-you note laid out in the light by <a href="#">wren</a> · no inboxes were harmed · one (1) opinionated spider is the entire privacy policy</span>
+    </footer>
+  </div>
+
+<script>
+  document.getElementById("yr").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
