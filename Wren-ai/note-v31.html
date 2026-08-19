@@ -3447,13 +3447,13 @@ body.bug-cursor, body.bug-cursor * { cursor: none !important; }
       requestAnimationFrame(drawLoop);
     })(performance.now());
     const quips = [
-      "the web remembers everything you forget to keep.",
+      "the web remembers only the notes you choose to keep.",
       "one violet thread, mended every day.",
-      "your name is safe by the fire.",
+      "if you like, you may leave an inspiring note for the one who joins after you to see.",
       "the tea is still warm, if you hurry.",
       "leave a note by the door — someone may be looking for it.",
-      "three hearts, six wings, one very long tail.",
-      "moths steer by your heartbeat.",
+      "4 hearts 4 tails 8 ears and counting.",
+      "moths flutter towards the light.",
       "thoughts, pinned and kept, like fireflies.",
       "Charlotte mends whatever we tear when we argue about the poetry."
     ];
@@ -4261,7 +4261,7 @@ body.bug-cursor, body.bug-cursor * { cursor: none !important; }
         store.set("vwc-wishes", list.slice(-80));
         render(list);
         input.value = "";
-        statusEl.textContent = "your wish is in the cloud ☁";
+        statusEl.textContent = "your wish is in the Yeshua's cloud ☁";
         return;
       }
       getSupabase().then((supabase) => {
@@ -4269,7 +4269,7 @@ body.bug-cursor, body.bug-cursor * { cursor: none !important; }
           input.value = "";
           const { data } = await supabase.from("wishes").select("*").order("created_at", { ascending: false }).limit(30);
           render(data || []);
-          statusEl.textContent = "your wish is in the cloud ☁";
+          statusEl.textContent = "your wish is in Yeshua's cloud ☁";
           setTimeout(() => { statusEl.textContent = "etherwire lit — the cloud is drifting"; }, 2200);
         });
       });
